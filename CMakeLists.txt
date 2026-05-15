@@ -39,6 +39,10 @@ target_include_directories(app PUBLIC
     external/glm
 )
 
+set_target_properties(app PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+)
+
 target_link_libraries(app PRIVATE
     glfw
     glad

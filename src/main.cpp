@@ -9,8 +9,7 @@
 
 #include "shader.h"
 
-#include "scene.h"
-#include "suspensionScene.h"
+#include "sceneManager.h"
 #include "window.h"
 
 const int DEFAULT_WINDOW_WIDTH = 800;
@@ -20,9 +19,11 @@ const float FIXED_DT = 0.004f;
 
 int main() {
     Window window(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
-    Scene* scene = new suspensionScene();
-    scene->init();
-    window.setScene(scene);
+
+    sceneManager m_sceneManager;
+    m_sceneManager.initDefaultScene();
+
+    window.setScene(m_sceneManager.getScene());
 
     float lastFrame = glfwGetTime();
     float frameAccumulator = 0.0f;
@@ -45,12 +46,12 @@ int main() {
         window.beginFrame();
 
         while (frameAccumulator >= FIXED_DT) {
-            scene->inputHandler(window, FIXED_DT);
-            scene->update(FIXED_DT, window);
+            m_sceneManager.getScene()->inputHandler(window, FIXED_DT);
+            m_sceneManager.updateScene(FIXED_DT, window);
             frameAccumulator -= FIXED_DT;
         }
 
-        scene->render(window);
+        m_sceneManager.renderScene(window);
 
         window.endFrame();
     }

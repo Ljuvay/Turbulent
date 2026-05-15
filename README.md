@@ -1,53 +1,66 @@
-# Clemson CPSC 4190 Project 5 (Extra Credit)
-By Dylan Kauffman
+# TEngine
+A custom game engine built from scratch in C++ with OpenGL
+(hopefully some Vulkan soon!) Being made to power my game "Turbulent"
+as a way to learn graphics and physics programming from the ground up.
 
-# Description
-A real time rigid body dynamics simulation of a mesh suspended by four springs.
-The simulation applies linear/angular velocity and handles forces between
-rigid bodies and springs. The collision response does NOT work right. I ran out of time
+## About Turbulent
+Turbulent is planned to be an ode to some of my favorite games I played
+throughout high school and college, Rust and Escape From Tarkov. Although I
+love these games they're both time consuming due to the nature of the game
+so I wish to set out and create something more accessible with busier schedules
+and with features and ideas that I love from these games as well as ones I 
+wish were implemented.
 
-# Building
-mkdir build
-cd build
-cmake ..
-make
-./app
+## Current State
+VERY early WIP. The base of this project is the custom renderer I made
+for my "Physical Modeling and Animation" at Clemson. Currently working
+on scene abstraction and some core boilerplate and clean-up based on issues
+I faced while using my renderer during class.
 
-# ---Simulation Controls---
-E       - Summon rigid body box (one at a time | reset to try again)
-c		- Cut a random spring!
-m/M     - Decrease/Increase Particle Mass (default 0.01)
-g/G     - Decrease/Increase Gravity (default -5.0)
-s/S     - Decrease/Increase Spring Constant (default 5.0)
-d/D     - Decrease/Increase Linear Spring Damping (default 0.3)
-a/A     - Decrease/Increase Angular Spring Damping (default 8.0)
-q/Q     - Decrease/Increase Collision Restitution (default 0.5)
-x/X     - Decrease/Increase Collision Stickiness (default 0.9)
-R       - Reset Simulation
-P       - Pause Simulation
-Esc     - Exit
+## How I'm Learning
+Honestly, my structure is a bit scrambled, but I originally started learning
+through learnopengl.com, but got too ambitious for reading through the textbook.
+Currently I am reading through Tomas Möller's "Real-Time Rendering", and just
+getting a basic mental roadmap of various topics and implementing them into my
+engine as I see fit when I want a new feature for Turbulent. I also do lots of
+research by watching YouTube videos or reading articles breaking down specific
+effects I find fascinating or chatting with more experienced developers online
+such as those in the "Graphics Programming" Discord.
 
-# ---Camera Controls---
-Arrow Keys  - Move Camera Forward/Backward/Left/Right
-Space/Ctrl  - Move Camera Up/Down
-T           - Reset Camera Rotation
-Tab         - Toggle Wireframe Mode
+## Goals
+`[-]` = In Progress | `[x]` = Done | `[ ]` = Planned
 
-# What I learned
+- [ ] Scene Management
+- [ ] Debug Grid
+- [ ] Basic Heightmap Terrain
+- [ ] Basic Blinn-phong lighting
+- [ ] LOD and Tessellation shaders
+- [ ] more to come...
 
-This project helped me to learn more about rigid bodies, and ATTEMPT
-to gain more understand of their collisions which I STILL cannot get right
-(oops). Overall was fun to be creative though, may try and redo collisions over
-the summer, would be fun when not under such a deadline. These weeks leading to
-finals have been crazy, so I didn't have much time. 
+## Monster Refactors
+`[-]` = In Progress | `[x]` = Done | `[ ]` = Planned
 
-# Resources Used
+- [-] MR-01 - Basic Cleanup from class projects, ~~basic scene abstraction~~
+- [ ] MR-02 - Proper Input handler cleanup
+- [ ] MR-03 - Safety Checks and exception handling
+- [ ] more to come...
 
-Rigid Body Slides
-https://jtessen.people.clemson.edu/cpsc6190/html/lectures.html
+## Built With
+- C++
+- OpenGL
+- GLFW
+- GLM
+- GLAD
+- CMake
 
-More Rigid Body
-https://ocw.mit.edu/courses/8-09-classical-mechanics-iii-fall-2014/6fe39e8d5ce4ce746ca256dfea665eda_MIT8_09F14_Chapter_2.pdf
+## Known Issues / Limitations
+Because my current set up was built for a physical modeling class, most renderer
+and vertex actions are handled via the CPU and the renderer has very limited power
+and expandability. Lots of work will need to be done on the renderer to handle new
+rendering methods, so it's a big work in progress.
 
-Quaternion
-https://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
+## Find Me
+[YouTube - Dev Logs & Demos](https://www.youtube.com/@Luvayy)
+
+---
+*"When every action has a purpose, every action has a result" - Gregg Plitt*

@@ -3,16 +3,23 @@
 
 #include <vector>
 #include <iostream>
-#include <>
+#include <string>
+#include <unordered_map>
+#include <memory>
 
 #include "scene.h"
 
 class sceneManager
 {
 public:
-	void initScene();
+	void initDefaultScene();
 
-	void setScene(Scene scenetoSet);
+	void setScene(std::string sceneName);
+
+	void updateScene(float dt, const Window& window);
+	void renderScene(const Window& window);
+
+	Scene* getScene();
 
 private:
 	std::unordered_map<std::string, std::unique_ptr<Scene>> g_scenes;

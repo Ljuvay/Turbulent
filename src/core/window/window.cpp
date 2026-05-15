@@ -22,7 +22,7 @@ Window::Window(int w, int h)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Create GLFW Window
-	_window = glfwCreateWindow(_SCR_WIDTH, _SCR_HEIGHT, "RigidBody Suspension Simulation", nullptr, nullptr);
+	_window = glfwCreateWindow(_SCR_WIDTH, _SCR_HEIGHT, "TEngine 2026", nullptr, nullptr);
 	if(!_window)
 	{
 		std::cerr << "FAILED TO CREATE GLFW WINDOW\n";

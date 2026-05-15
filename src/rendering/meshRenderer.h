@@ -45,6 +45,7 @@ public:
 
 		// Initialize counters
 		_indexCount = 0;
+		_vertexCount = 0;
 		_VBOsize = 0;
 		_EBOsize = 0;
 	}
