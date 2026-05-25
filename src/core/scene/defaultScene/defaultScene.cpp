@@ -12,10 +12,13 @@ defaultScene::~defaultScene() {}
 
 void defaultScene::init() 
 {
-	_Camera->Position = { 0.0f, 0.0f, 10.0f };
+	_Camera->Position = df_sSettings.defaultCamPos;
+
+	glGenVertexArrays(1, &_gridVAO);
 
 	_RM->addMesh("resources/models/cube.obj", "defaultCube");
 	_RM->addShader("resources/shaders/defaultMesh_vs.glsl", "resources/shaders/defaultMesh_fs.glsl", "defaultShader");
+	_RM->addShader("resources/shaders/debugGridTest_vs.glsl", "resources/shaders/debugGridTest_fs.glsl", "debugGridShader");
 
 	std::vector<Vertex>& verts = _RM->getMeshData("defaultCube").vertices;
 	for (Vertex& vtx : verts)
@@ -49,7 +52,21 @@ void defaultScene::render(const Window& window)
 	_MRenderer->updateGPU(_RM->getMeshData("defaultCube").vertices, _RM->getMeshData("defaultCube").indices);
 	_MRenderer->drawMesh();
 
+	Shader& debugGridShader = _RM->getShaderData("debugGridShader");
+	debugGridShader.use();
+	debugGridShader.setMat4("view", view);
+	debugGridShader.setMat4("projection", projection);
+	debugGridShader.setVec3("camPos", _Camera->Position);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask(GL_FALSE);
+
+	glBindVertexArray(_gridVAO);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
 }
 
 void defaultScene::inputHandler(Window& window, float dt)

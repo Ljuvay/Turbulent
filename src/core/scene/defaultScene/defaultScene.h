@@ -13,7 +13,7 @@
 
 struct sceneSettings
 {
-	glm::vec3 defaultCamPos = { 0.0f, 0.0f, 10.0f };
+	glm::vec3 defaultCamPos = { 0.0f, 5.0f, 10.0f };
 	bool meshFill = true;
 	bool paused = false;
 };
@@ -33,6 +33,7 @@ private:
 
 	sceneSettings df_sSettings;
 
+	unsigned int _gridVAO = 0;
 	float _rotation = 0.0f;
 	bool inputLastFrame = false;
 };
