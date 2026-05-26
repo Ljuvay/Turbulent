@@ -1,3 +1,7 @@
+// Perlin noise implementation adapted from Flafla2's gist:
+// https://gist.github.com/Flafla2/f0260a861be0ebdeef76
+// Based on Ken Perlin’s improved noise algorithm
+
 #ifndef PERLIN_H
 #define PERLIN_H
 
