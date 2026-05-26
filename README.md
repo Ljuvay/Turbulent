@@ -3,6 +3,10 @@ A custom game engine built from scratch in C++ with OpenGL
 (hopefully some Vulkan soon!) Being made to power my game "Turbulent"
 as a way to learn graphics and physics programming from the ground up.
 
+## Last Updated
+**May 2026** - Crude terrain generation with chunk system and height-based color. Major refactoring incoming...
+<img width="771" height="471" alt="image" src="https://github.com/user-attachments/assets/d01d3115-1cc1-4d15-8ea9-9c0c05edfb3c" />
+
 ## About Turbulent
 Turbulent is planned to be an ode to some of my favorite games I played
 throughout high school and college, Rust and Escape From Tarkov. Although I
@@ -20,7 +24,7 @@ I faced while using my renderer during class.
 ## How I'm Learning
 Honestly, my structure is a bit scrambled, but I originally started learning
 through learnopengl.com, but got too ambitious for reading through the textbook.
-Currently I am reading through Tomas Möller's "Real-Time Rendering", and just
+Currently I am reading through Tomas MÃ¶ller's "Real-Time Rendering", and just
 getting a basic mental roadmap of various topics and implementing them into my
 engine as I see fit when I want a new feature for Turbulent. I also do lots of
 research by watching YouTube videos or reading articles breaking down specific
@@ -30,9 +34,9 @@ such as those in the "Graphics Programming" Discord.
 ## Goals
 `[-]` = In Progress | `[x]` = Done | `[ ]` = Planned
 
-- [ ] Scene Management
-- [ ] Debug Grid
-- [ ] Basic Heightmap Terrain
+- [x] Scene Management
+- [x] Debug Grid
+- [x] Basic Heightmap Terrain
 - [ ] Basic Blinn-phong lighting
 - [ ] LOD and Tessellation shaders
 - [ ] more to come...
