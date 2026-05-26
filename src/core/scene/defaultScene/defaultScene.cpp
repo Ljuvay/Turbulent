@@ -25,6 +25,7 @@ void defaultScene::init()
 	{
 		vtx.color = { 1.0f, 0.5f, 0.0f };
 	}
+	_MRenderer->updateGPU(_RM->getMeshData("defaultCube").vertices, _RM->getMeshData("defaultCube").indices);
 
 	terrSettings tSet;
 	df_terrain = std::make_unique<terrain>(tSet);
@@ -124,7 +125,6 @@ void defaultScene::render(const Window& window)
 	defaultShader.setMat4("view", view);
 	defaultShader.setMat4("model", model);
 	defaultShader.setMat4("projection", projection);
-	_MRenderer->updateGPU(_RM->getMeshData("defaultCube").vertices, _RM->getMeshData("defaultCube").indices);
 	_MRenderer->drawMesh();
 
 	Shader& terrainShader = _RM->getShaderData("terrainShader");

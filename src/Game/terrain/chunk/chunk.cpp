@@ -15,7 +15,7 @@ Chunk::Chunk(glm::ivec2 coord, int size, int resolution, const terrSettings& set
 	float stepSize = (float)size / (float)resolution;
 
 	noise::Perlin perlin;
-	float scale = 0.005f;
+	float scale = 0.003f;
 
 	for (float i = 0; i < resolution + 1; i++)
 	{
@@ -26,9 +26,9 @@ Chunk::Chunk(glm::ivec2 coord, int size, int resolution, const terrSettings& set
 
 			float baseNoise = perlin.OctavePerlin(worldX * scale, 0, worldZ * scale, 4, 0.5f);
 			float mountainMask = perlin.OctavePerlin(worldX * scale * 0.3f, 0.5f, worldZ * scale * 0.3f, 2, 0.5f);
-			mountainMask = pow(mountainMask, 5.0f);
+			mountainMask = pow(mountainMask, 5.5f);
 			float mountainNoise = perlin.OctavePerlin(worldX * scale * 2.0f, 1.0f, worldZ * scale * 2.0f, 8, 0.6f);
-			float height = (baseNoise * 40.0f) + (mountainMask * mountainNoise * t_settings.terrHeight);
+			float height = (baseNoise * 30.0f) + (mountainMask * mountainNoise * t_settings.terrHeight);
 			
 			/*float perlinVal = (perlin.OctavePerlin(worldX * scale, 0, worldZ * scale, t_settings.terrOctaves, 0.5f) - 0.5f) * 2.0f;
 			perlinVal = pow(perlinVal, 4.0f);
