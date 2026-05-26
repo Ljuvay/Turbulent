@@ -16,12 +16,12 @@ void main()
     vec3 worldPos = nearPoint + t * (farPoint - nearPoint);
 
     vec2 grid = abs(fract(worldPos.xz / 10.0) - 0.5);
-    vec2 fw = fwidth(worldPos.xz / 10.0);
+    vec2 fw = fwidth(worldPos.xz / 20.0);
     vec2 smoothGrid = smoothstep(fw, 2.0 * fw, grid);
     float gridLine = 1.0 - min(smoothGrid.x, smoothGrid.y);
 
     float dist = length(camPos - worldPos);
-    float fade = 1.0 - smoothstep(50.0, 150.0, dist);
+    float fade = 1.0 - smoothstep(50.0, 250.0, dist);
 
     if(gridLine * fade < 0.01) discard;
 

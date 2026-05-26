@@ -10,10 +10,12 @@
 #include "meshRenderer.h"
 #include "shader.h"
 #include "vertex.h"
+#include "terrain.h"
+#include "terrSettings.h"
 
 struct sceneSettings
 {
-	glm::vec3 defaultCamPos = { 0.0f, 5.0f, 10.0f };
+	glm::vec3 defaultCamPos = { 0.0f, 5.0f, 0.0f };
 	bool meshFill = true;
 	bool paused = false;
 };
@@ -31,11 +33,15 @@ public:
 private:
 	void initResources();
 
+	std::unique_ptr<terrain> df_terrain;
 	sceneSettings df_sSettings;
 
 	unsigned int _gridVAO = 0;
 	float _rotation = 0.0f;
 	bool inputLastFrame = false;
+
+	// Temp b4 refactor
+	meshRenderer* _TerrainRenderer = nullptr;
 };
 
 #endif // !DEFAULTSCENE_H

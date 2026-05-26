@@ -1,14 +1,10 @@
-﻿// Clemson CPSC 4190
-// Project 5 - Flocking Simulation (:
-//
-// Dylan Kauffman
-
-#include <glad/glad.h>
+﻿#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
 #include "shader.h"
 
+#include "input.h"
 #include "sceneManager.h"
 #include "window.h"
 
@@ -19,6 +15,8 @@ const float FIXED_DT = 0.004f;
 
 int main() {
     Window window(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+
+    Input::init(window.getWindow());
 
     sceneManager m_sceneManager;
     m_sceneManager.initDefaultScene();

@@ -5,6 +5,13 @@
 #include "terrain.h"
 #include "chunk.h"
 
+constexpr int CHUNK_DEFAULT_RESOLUTION = 10;
+
+terrain::terrain(const terrSettings& settings)
+{
+	t_Settings = settings;
+}
+
 void terrain::buildTerrain()
 {
 	int XChunksAmount = t_Settings.terrSubDiv;
@@ -19,7 +26,15 @@ void terrain::buildTerrain()
 	{
 		for (int YChunkIter = -YChunksAmount / 2; YChunkIter < YChunksAmount / 2; YChunkIter++)
 		{
-			Chunk terrChunk();
+			float chunkSize = t_Settings.terrSize / t_Settings.terrSubDiv;
+
+			//Get pos for chunk based off iterators
+			glm::vec2 chunkStartPos; // We start at bottom left (-, -) and go to (+, +)
+			chunkStartPos.x = (XChunkIter * chunkSize);
+			chunkStartPos.y = (YChunkIter * chunkSize);
+
+			//Chunk terrChunk(chunkStartPos, chunkSize, CHUNK_DEFAULT_RESOLUTION);
+			Chunks.push_back(std::make_unique<Chunk>(chunkStartPos, XChunksSize, CHUNK_DEFAULT_RESOLUTION, t_Settings));
 		}
 	}
 }

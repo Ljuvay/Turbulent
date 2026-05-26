@@ -6,34 +6,31 @@
 #include <vector>
 #include <memory>
 
-#include "chunk/chunk.h"
-
-constexpr int DEFAULT_TERRAIN_SIZE = 4000;
-constexpr int DEFAULT_TERRAIN_HEIGHT = 200;
-constexpr int DEFAULT_TERRAIN_SUBDIVISIONS = 20;
-constexpr int DEFAULT_TERRAIN_OCTAVES = 8;
-
-struct terrSettings
-{
-	int terrSize = DEFAULT_TERRAIN_SIZE;
-	int terrHeight = DEFAULT_TERRAIN_HEIGHT;
-	int terrSubDiv = DEFAULT_TERRAIN_SUBDIVISIONS;
-	int terrOctaves = DEFAULT_TERRAIN_OCTAVES;
-};
+#include "chunk.h"
+#include "terrVert.h"
+#include "terrSettings.h"
 
 class terrain
 {
 public:
+	terrain(const terrSettings& settings);
+
 	void buildTerrain();
-	void rebuildTerrain();
+	void rebuildTerrain(const terrSettings& newSettings);
 	void deleteTerrain();
 
 	void generateSeed();
 
+	float sampleHeight(float x, float z) const;
+	Chunk* getChunkAt(int worldX, int worldZ);
+	const std::vector<std::unique_ptr<Chunk>>& getChunks() const { return Chunks; }
+
 private:
+	void createChunks();
+
 	terrSettings t_Settings;
-	std::vector<Chunk> Chunks;
-	int seed;
+	std::vector<std::unique_ptr<Chunk>> Chunks;
+	uint32_t seed;
 };
 
 #endif //!TERRAIN_H

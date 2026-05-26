@@ -7,7 +7,6 @@
 #include "defaultScene.h"
 #include "scene.h"
 
-
 defaultScene::~defaultScene() {}
 
 void defaultScene::init() 
@@ -19,12 +18,61 @@ void defaultScene::init()
 	_RM->addMesh("resources/models/cube.obj", "defaultCube");
 	_RM->addShader("resources/shaders/defaultMesh_vs.glsl", "resources/shaders/defaultMesh_fs.glsl", "defaultShader");
 	_RM->addShader("resources/shaders/debugGridTest_vs.glsl", "resources/shaders/debugGridTest_fs.glsl", "debugGridShader");
+	_RM->addShader("resources/shaders/terrain_vs.glsl", "resources/shaders/terrain_fs.glsl", "terrainShader");
 
 	std::vector<Vertex>& verts = _RM->getMeshData("defaultCube").vertices;
 	for (Vertex& vtx : verts)
 	{
 		vtx.color = { 1.0f, 0.5f, 0.0f };
 	}
+
+	terrSettings tSet;
+	df_terrain = std::make_unique<terrain>(tSet);
+	df_terrain->buildTerrain();
+
+	auto& chunks = df_terrain->getChunks();
+	auto& chunkVerts = chunks[0]->getVertices();
+	auto& chunkIndices = chunks[0]->getIndices();
+
+	std::vector<Vertex> tempVerts;
+	std::vector<GLuint> tempIndices;
+	GLuint vertOffset = 0;
+	
+	for (auto& chunk : df_terrain->getChunks())
+	{
+		for (auto& tv : chunk->getVertices())
+		{
+			Vertex v;
+			v.position = tv.pos;
+			v.normal = tv.norm;
+			v.uv = tv.uv;
+			v.color = { 0.0f, 1.0f, 1.0f };
+			tempVerts.push_back(v);
+		}
+		for (auto& idx : chunk->getIndices())
+		{
+			tempIndices.push_back(idx + vertOffset);
+		}
+		vertOffset += chunk->getVertices().size();
+	}
+
+	_TerrainRenderer = new meshRenderer();
+
+	//std::vector<GLuint> tempIndices(chunkIndices.begin(), chunkIndices.end());
+	_TerrainRenderer->updateGPU(tempVerts, tempIndices);
+
+	std::cout << "Chunk count: " << chunks.size() << std::endl;
+	std::cout << "Vert count: " << chunks[0]->getVertices().size() << std::endl;
+	std::cout << "Index count: " << chunks[0]->getIndices().size() << std::endl;
+
+	float minY = FLT_MAX, maxY = -FLT_MAX;
+	for (auto& chunk : df_terrain->getChunks())
+		for (auto& v : chunk->getVertices())
+		{
+			minY = std::min(minY, v.pos.y);
+			maxY = std::max(maxY, v.pos.y);
+		}
+	std::cout << "MinY: " << minY << " MaxY: " << maxY << std::endl;
 }
 
 void defaultScene::update(float dt, const Window& window)
@@ -36,21 +84,12 @@ void defaultScene::render(const Window& window)
 {
 	_Camera->setPerspective((float)window.getWidth() / (float)window.getHeight());
 	
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f), _Camera->getPerspective(), 0.1f, 100.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), _Camera->getPerspective(), 0.1f, 10000.0f);
 	glm::mat4 view = _Camera->GetViewMatrix();
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::rotate(model, glm::radians(_rotation), glm::vec3(-1.0f, 1.0f, -1.0f));
 
-	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
-
-	Shader& defaultShader = _RM->getShaderData("defaultShader");
-	defaultShader.use();
-	defaultShader.setMat4("view", view);
-	defaultShader.setMat4("model", model);
-	defaultShader.setMat4("projection", projection);
-	_MRenderer->updateGPU(_RM->getMeshData("defaultCube").vertices, _RM->getMeshData("defaultCube").indices);
-	_MRenderer->drawMesh();
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	Shader& debugGridShader = _RM->getShaderData("debugGridShader");
 	debugGridShader.use();
@@ -67,6 +106,35 @@ void defaultScene::render(const Window& window)
 
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
+
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+
+	if (df_sSettings.meshFill)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+	else
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+
+	Shader& defaultShader = _RM->getShaderData("defaultShader");
+	defaultShader.use();
+	defaultShader.setMat4("view", view);
+	defaultShader.setMat4("model", model);
+	defaultShader.setMat4("projection", projection);
+	_MRenderer->updateGPU(_RM->getMeshData("defaultCube").vertices, _RM->getMeshData("defaultCube").indices);
+	_MRenderer->drawMesh();
+
+	Shader& terrainShader = _RM->getShaderData("terrainShader");
+	terrainShader.use();
+	terrainShader.setMat4("view", view);
+	terrainShader.setMat4("model", glm::mat4(1.0f));
+	terrainShader.setMat4("projection", projection);
+	terrSettings tSet;
+	terrainShader.setFloat("maxTerrainHeight", tSet.terrHeight);
+	_TerrainRenderer->drawMesh();
 }
 
 void defaultScene::inputHandler(Window& window, float dt)

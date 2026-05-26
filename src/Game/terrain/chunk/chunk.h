@@ -5,10 +5,13 @@
 
 #include <vector>
 
+#include "terrVert.h"
+#include "terrSettings.h"
+
 class Chunk
 {
 public:
-	Chunk(glm::vec3 chunkPos);
+	Chunk(glm::ivec2 coord, int size, int resolution, const terrSettings& settings);
 
 	Chunk(const Chunk&) = delete;
 	Chunk& operator = (const Chunk&) = delete;
@@ -16,11 +19,20 @@ public:
 	Chunk(Chunk&&) = delete;
 	Chunk& operator=(Chunk&&) = delete;
 
-	void buildChunk(glm::vec3 chunkPos);
+	void build();
+
+	const std::vector<terrVert>& getVertices() const { return terrainVertices; }
+	const std::vector<uint32_t>& getIndices() const { return indices; }
 
 private:
-	std::vector<glm::vec3> chunkPoints;
-	glm::vec2 chunkPos;
+	glm::ivec2 coord;
+	int size;
+	int resolution;
+	terrSettings t_settings;
+
+	std::vector<float> heightmap;
+	std::vector<terrVert> terrainVertices;
+	std::vector<uint32_t> indices;
 };
 
 #endif // !CHUNK_H
