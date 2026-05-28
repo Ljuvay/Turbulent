@@ -55,12 +55,6 @@ public:
 		glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 		glEnableVertexAttribArray(3);
 		glVertexAttribDivisor(3, 1);
-		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
-		glEnableVertexAttribArray(4);
-		glVertexAttribDivisor(4, 1);
-		glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, radius));
-		glEnableVertexAttribArray(5);
-		glVertexAttribDivisor(5, 1);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);

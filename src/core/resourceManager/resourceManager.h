@@ -13,11 +13,14 @@
 
 class ResourceManager {
 public:
+	void loadResources();
+
 	void addMesh(const std::string& meshPath, const std::string& meshName);
 	void deleteMesh(const std::string& meshName);
 	void updateMesh(const std::string& meshName, Mesh newMesh);
 
-	void addParticles(const std::string& collectionName);
+	void createEmptyParticleGroup(const std::string& collectionName);
+	void addParticles(const std::vector<Vertex>& particles, const std::string& collectionName);
 	void deleteParticles(const std::string& collectionName);
 	void updateParticles(const std::vector<Vertex>& particles, const std::string& collectionName);
 
@@ -26,14 +29,18 @@ public:
 	void updateShader(const std::string& shaderPath_vs, const std::string& shaderPath_fs, const std::string& shaderName);
 
 	bool hasMesh(const std::string& meshName);
-	bool hasShader(const std::string& shaderName);
 	bool hasParticles(const std::string& containerName);
+	bool hasShader(const std::string& shaderName);
 
 	Shader& getShaderData(const std::string& shaderName);
 	Mesh& getMeshData(const std::string& meshName);
 	std::vector<Vertex>& getParticleData(const std::string& collectionName);
 
 private:
+	void loadMeshGroup();
+	void loadParticleGroup();
+	void loadShaderGroup();
+
 	std::unordered_map<std::string, Mesh> meshContainer;
 	std::unordered_map<std::string, std::unique_ptr<Shader>> shaderContainer;
 	std::unordered_map<std::string, std::vector<Vertex>> particleCollectionContainer;

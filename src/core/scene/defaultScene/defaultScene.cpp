@@ -15,74 +15,44 @@ void defaultScene::init()
 
 	glGenVertexArrays(1, &_gridVAO);
 
-	_RM->addMesh("resources/models/cube.obj", "defaultCube");
-	_RM->addShader("resources/shaders/defaultMesh_vs.glsl", "resources/shaders/defaultMesh_fs.glsl", "defaultShader");
-	_RM->addShader("resources/shaders/debugGridTest_vs.glsl", "resources/shaders/debugGridTest_fs.glsl", "debugGridShader");
-	_RM->addShader("resources/shaders/terrain_vs.glsl", "resources/shaders/terrain_fs.glsl", "terrainShader");
+	_RM->loadResources();
 
-	std::vector<Vertex>& verts = _RM->getMeshData("defaultCube").vertices;
-	for (Vertex& vtx : verts)
-	{
-		vtx.color = { 1.0f, 0.5f, 0.0f };
-	}
-	_MRenderer->updateGPU(_RM->getMeshData("defaultCube").vertices, _RM->getMeshData("defaultCube").indices);
+	_MRenderer->updateGPU(_RM->getMeshData("cube").vertices, _RM->getMeshData("cube").indices);
 
 	terrSettings tSet;
 	df_terrain = std::make_unique<terrain>(tSet);
 	df_terrain->buildTerrain();
 
-	auto& chunks = df_terrain->getChunks();
-	auto& chunkVerts = chunks[0]->getVertices();
-	auto& chunkIndices = chunks[0]->getIndices();
-
-	std::vector<Vertex> tempVerts;
-	std::vector<GLuint> tempIndices;
-	GLuint vertOffset = 0;
-	
-	for (auto& chunk : df_terrain->getChunks())
-	{
-		for (auto& tv : chunk->getVertices())
-		{
-			Vertex v;
-			v.position = tv.pos;
-			v.normal = tv.norm;
-			v.uv = tv.uv;
-			v.color = { 0.0f, 1.0f, 1.0f };
-			tempVerts.push_back(v);
-		}
-		for (auto& idx : chunk->getIndices())
-		{
-			tempIndices.push_back(idx + vertOffset);
-		}
-		vertOffset += chunk->getVertices().size();
-	}
-
 	_TerrainRenderer = new meshRenderer();
 
-	//std::vector<GLuint> tempIndices(chunkIndices.begin(), chunkIndices.end());
-	_TerrainRenderer->updateGPU(tempVerts, tempIndices);
-
-	std::cout << "Chunk count: " << chunks.size() << std::endl;
-	std::cout << "Vert count: " << chunks[0]->getVertices().size() << std::endl;
-	std::cout << "Index count: " << chunks[0]->getIndices().size() << std::endl;
-
-	float minY = FLT_MAX, maxY = -FLT_MAX;
-	for (auto& chunk : df_terrain->getChunks())
-		for (auto& v : chunk->getVertices())
-		{
-			minY = std::min(minY, v.pos.y);
-			maxY = std::max(maxY, v.pos.y);
-		}
-	std::cout << "MinY: " << minY << " MaxY: " << maxY << std::endl;
+	auto [verts, indices] = df_terrain->toMeshData();
+	_TerrainRenderer->updateGPU(verts, indices);
 }
 
 void defaultScene::update(float dt, const Window& window)
 {
+	/*
+	We need to get this to
+	player.update(dt);
+	terrainSystem.update(camera.position);
+	*/
 	_rotation += 50.0f * dt;
 }
 
 void defaultScene::render(const Window& window)
 {
+	/*
+	* We need to get this down to something simple like
+	* renderer.begin();
+	* 
+	* renderer.drawWorld();
+	* renderer.drawTerrain();
+	* renderer.drawDebug();
+	* 
+	* renderer.end();
+	*/
+
+
 	_Camera->setPerspective((float)window.getWidth() / (float)window.getHeight());
 	
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), _Camera->getPerspective(), 0.1f, 10000.0f);
@@ -92,7 +62,7 @@ void defaultScene::render(const Window& window)
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-	Shader& debugGridShader = _RM->getShaderData("debugGridShader");
+	Shader& debugGridShader = _RM->getShaderData("debugGrid");
 	debugGridShader.use();
 	debugGridShader.setMat4("view", view);
 	debugGridShader.setMat4("projection", projection);
@@ -120,14 +90,14 @@ void defaultScene::render(const Window& window)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 
-	Shader& defaultShader = _RM->getShaderData("defaultShader");
+	Shader& defaultShader = _RM->getShaderData("defaultMesh");
 	defaultShader.use();
 	defaultShader.setMat4("view", view);
 	defaultShader.setMat4("model", model);
 	defaultShader.setMat4("projection", projection);
 	_MRenderer->drawMesh();
 
-	Shader& terrainShader = _RM->getShaderData("terrainShader");
+	Shader& terrainShader = _RM->getShaderData("defaultTerrain");
 	terrainShader.use();
 	terrainShader.setMat4("view", view);
 	terrainShader.setMat4("model", glm::mat4(1.0f));
@@ -141,16 +111,15 @@ void defaultScene::inputHandler(Window& window, float dt)
 {
 	GLFWwindow* glfwWindow = window.getWindow();
 
-	if (glfwGetKey(glfwWindow, GLFW_KEY_UP) == GLFW_PRESS) _Camera->ProcessInputs(FORWARD, dt);
-	if (glfwGetKey(glfwWindow, GLFW_KEY_DOWN) == GLFW_PRESS) _Camera->ProcessInputs(BACKWARD, dt);
-	if (glfwGetKey(glfwWindow, GLFW_KEY_LEFT) == GLFW_PRESS) _Camera->ProcessInputs(LEFT, dt);
-	if (glfwGetKey(glfwWindow, GLFW_KEY_RIGHT) == GLFW_PRESS) _Camera->ProcessInputs(RIGHT, dt);
-	if (glfwGetKey(glfwWindow, GLFW_KEY_SPACE) == GLFW_PRESS) _Camera->ProcessInputs(UP, dt);
-	if (glfwGetKey(glfwWindow, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) _Camera->ProcessInputs(DOWN, dt);
-	if (glfwGetKey(glfwWindow, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(glfwWindow, true);
-	if (glfwGetKey(glfwWindow, GLFW_KEY_T) == GLFW_PRESS) _Camera->resetRotation();
+	if (Input::KeyDown(GLFW_KEY_W)) _Camera->ProcessInputs(FORWARD, dt);
+	if (Input::KeyDown(GLFW_KEY_S)) _Camera->ProcessInputs(BACKWARD, dt);
+	if (Input::KeyDown(GLFW_KEY_A)) _Camera->ProcessInputs(LEFT, dt);
+	if (Input::KeyDown(GLFW_KEY_D)) _Camera->ProcessInputs(RIGHT, dt);
+	if (Input::KeyDown(GLFW_KEY_SPACE)) _Camera->ProcessInputs(UP, dt);
+	if (Input::KeyDown(GLFW_KEY_LEFT_CONTROL)) _Camera->ProcessInputs(DOWN, dt);
+	if (Input::KeyDown(GLFW_KEY_ESCAPE)) glfwSetWindowShouldClose(glfwWindow, true);
 
-	if (glfwGetKey(glfwWindow, GLFW_KEY_TAB) == GLFW_PRESS && inputLastFrame == false) {
+	if (Input::KeyPressed(GLFW_KEY_TAB)) {
 		if (df_sSettings.meshFill == true) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			df_sSettings.meshFill = false;
@@ -159,9 +128,5 @@ void defaultScene::inputHandler(Window& window, float dt)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			df_sSettings.meshFill = true;
 		}
-		inputLastFrame = true;
 	}
-
-
-	if (glfwGetKey(glfwWindow, GLFW_KEY_TAB) != GLFW_PRESS) { inputLastFrame = false; }
 }

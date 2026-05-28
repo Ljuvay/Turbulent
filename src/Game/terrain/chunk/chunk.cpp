@@ -4,8 +4,9 @@
 
 #include "chunk.h"
 #include "perlin.h"
+#include "vertex.h"
 
-Chunk::Chunk(glm::ivec2 coord, int size, int resolution, const terrSettings& settings) :
+Chunk::Chunk(glm::ivec2 coord, int size, int32_t seed, int resolution, const terrSettings& settings) :
 	coord(coord),
 	size(size),
 	resolution(resolution),
@@ -15,7 +16,7 @@ Chunk::Chunk(glm::ivec2 coord, int size, int resolution, const terrSettings& set
 	float stepSize = (float)size / (float)resolution;
 
 	noise::Perlin perlin;
-	float scale = 0.003f;
+	float scale = 0.002f;
 
 	for (float i = 0; i < resolution + 1; i++)
 	{
@@ -35,7 +36,7 @@ Chunk::Chunk(glm::ivec2 coord, int size, int resolution, const terrSettings& set
 			float height = (perlinVal - 0.01f) * t_settings.terrHeight;
 			*/
 
-			terrVert tVert{
+			Vertex tVert{
 				{worldX, height, worldZ}, // Position
 				{0.0f, 0.0f, 0.0f},	// Normal
 				{0.0f, 0.0f}		// UV
@@ -62,4 +63,35 @@ Chunk::Chunk(glm::ivec2 coord, int size, int resolution, const terrSettings& set
 			indices.push_back(bottomLeft);
 		}
 	}
+}
+
+void Chunk::build()
+{
+	/*
+	auto& chunks = df_terrain->getChunks();
+	auto& chunkVerts = chunks[0]->getVertices();
+	auto& chunkIndices = chunks[0]->getIndices();
+
+	std::vector<Vertex> tempVerts;
+	std::vector<GLuint> tempIndices;
+	GLuint vertOffset = 0;
+	
+	for (auto& chunk : df_terrain->getChunks())
+	{
+		for (auto& tv : chunk->getVertices())
+		{
+			Vertex v;
+			v.position = tv.pos;
+			v.normal = tv.norm;
+			v.uv = tv.uv;
+			v.color = { 0.0f, 1.0f, 1.0f };
+			tempVerts.push_back(v);
+		}
+		for (auto& idx : chunk->getIndices())
+		{
+			tempIndices.push_back(idx + vertOffset);
+		}
+		vertOffset += chunk->getVertices().size();
+	}
+	*/
 }

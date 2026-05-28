@@ -140,6 +140,5 @@ void rigidBody::updateMesh()
 	for (int i = 0; i < referenceMesh->vertices.size(); i++)
 	{
 		referenceMesh->vertices[i].position = CenterOfMass + (rMatrix * rNodes[i].leverArm);
-		referenceMesh->vertices[i].color = rNodes[i].color;
 	}
 }

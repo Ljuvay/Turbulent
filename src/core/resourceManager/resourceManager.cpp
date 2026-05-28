@@ -1,10 +1,20 @@
-#include "resourceManager.h"
-#include "fileLoader.h"
-#include "mesh.h"
-
 #include <string>
 #include <iostream>
 #include <unordered_map>
+
+#include "resourceManager.h"
+#include "fileLoader.h"
+#include "mesh.h"
+#include "resourceTargets.h"
+
+// Load Resources
+
+void ResourceManager::loadResources()
+{
+	loadMeshGroup();
+	loadParticleGroup();
+	loadShaderGroup();
+}
 
 // Mesh
 
@@ -14,7 +24,7 @@ void ResourceManager::addMesh(const std::string& meshPath, const std::string& me
 		std::cerr << "FAILURE \"" << meshName << "\" ALREADY EXIST" << std::endl;
 		return;
 	}
-	std::cout << "SUCCESS" << std::endl;
+	else { std::cout << "SUCCESS" << std::endl; }
 	meshContainer.emplace(meshName, fileLoader::loadObj(meshPath));
 }
 
@@ -31,15 +41,31 @@ void ResourceManager::updateMesh(const std::string& meshName, Mesh newMesh) {
 
 // Particle
 
-void ResourceManager::addParticles(const std::string& collectionName) {
-	std::cout << "Trying to add Particle Collection: \"" << collectionName << "\" to scene | STATUS: ";
+void ResourceManager::createEmptyParticleGroup(const std::string& collectionName) {
+	std::cout << "Trying to create empty Particle Group: \"" << collectionName << "\" to scene | STATUS: ";
 	if (particleCollectionContainer.find(collectionName) != particleCollectionContainer.end()) {
 		std::cerr << "FAILURE \"" << collectionName << "\" ALREADY EXIST" << std::endl;
 	}
-	std::cout << "SUCCESS" << std::endl;
-
+	else 
+	{ 
 	std::vector<Vertex> particles;
 	particleCollectionContainer.emplace(collectionName, particles);
+	std::cout << "SUCCESS" << std::endl; 
+	}
+}
+
+void ResourceManager::addParticles(const std::vector<Vertex>& particles, const std::string& collectionName)
+{
+	std::cout << "Trying to add Particle: \"" << collectionName << "\" to scene | STATUS: ";
+	if (particleCollectionContainer.find(collectionName) != particleCollectionContainer.end())
+	{
+		std::cerr << "FAILURE \"" << collectionName << "\" ALREADY EXIST" << std::endl;
+	}
+	else
+	{
+		particleCollectionContainer.emplace(collectionName, particles);
+		std::cout << "SUCCESS" << std::endl;
+	}
 }
 
 void ResourceManager::deleteParticles(const std::string& collectionName) {
@@ -52,13 +78,13 @@ void ResourceManager::updateParticles(const std::vector<Vertex>& particles, cons
 	particleCollectionContainer[collectionName] = particles;
 }
 
-
 // Shader
 
 void ResourceManager::addShader(const std::string& shaderPath_vs, const std::string& shaderPath_fs, const std::string& shaderName) {
 	std::cout << "Trying to add Shader: \"" << shaderName << "\" to scene | STATUS: ";
 	if (shaderContainer.find(shaderName) != shaderContainer.end()) {
 		std::cerr << "FAILURE \"" << shaderName << "\" ALREADY EXIST" << std::endl;
+		return;
 	}
 	shaderContainer.emplace(shaderName, std::make_unique<Shader>(shaderPath_vs.c_str(), shaderPath_fs.c_str()));
 	std::cout << "SUCCESS" << std::endl;
@@ -76,7 +102,7 @@ void ResourceManager::updateShader(const std::string& shaderPath_vs, const std::
 	shaderContainer[shaderName] = std::make_unique<Shader>(shaderPath_vs.c_str(), shaderPath_fs.c_str());
 }
 
-// Test if contains
+// Test for contents
 
 bool ResourceManager::hasMesh(const std::string& meshName) {
 	if (meshContainer.find(meshName) != meshContainer.end()) {
@@ -84,6 +110,7 @@ bool ResourceManager::hasMesh(const std::string& meshName) {
 	}
 	else { return false; }
 }
+
 bool ResourceManager::hasShader(const std::string& shaderName) {
 	if (shaderContainer.find(shaderName) != shaderContainer.end()) {
 		return true;
@@ -119,4 +146,27 @@ std::vector<Vertex>& ResourceManager::getParticleData(const std::string& collect
 		std::cerr << "ERROR:ERROR PARTICLE COLLECTION " << collectionName << " DOES NOT EXIST IN THIS SCENE" << std::endl;
 	}
 	return particleCollectionContainer.find(collectionName)->second;
+}
+
+// Private Loaders
+
+void ResourceManager::loadMeshGroup()
+{
+	for (const auto& t : MESH_TARGETS)
+	{
+		addMesh(std::string(t.path), std::string(t.name));
+	}
+}
+
+void ResourceManager::loadParticleGroup()
+{
+	return; // idk if ill need this for awhile
+}
+
+void ResourceManager::loadShaderGroup()
+{
+	for (const auto& t : SHADER_TARGETS)
+	{
+		addShader(std::string(t.vs), std::string(t.fs), std::string(t.name));
+	}
 }

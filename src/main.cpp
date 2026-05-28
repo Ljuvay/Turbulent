@@ -45,6 +45,7 @@ int main() {
 
         while (frameAccumulator >= FIXED_DT) {
             m_sceneManager.getScene()->inputHandler(window, FIXED_DT);
+            Input::Update();
             m_sceneManager.updateScene(FIXED_DT, window);
             frameAccumulator -= FIXED_DT;
         }

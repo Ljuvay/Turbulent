@@ -12,6 +12,7 @@
 #include "vertex.h"
 #include "terrain.h"
 #include "terrSettings.h"
+#include "input.h"
 
 struct sceneSettings
 {
@@ -38,7 +39,6 @@ private:
 
 	unsigned int _gridVAO = 0;
 	float _rotation = 0.0f;
-	bool inputLastFrame = false;
 
 	// Temp b4 refactor
 	meshRenderer* _TerrainRenderer = nullptr;
