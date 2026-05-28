@@ -5,6 +5,7 @@ as a way to learn graphics and physics programming from the ground up.
 
 ## Last Updated
 **May 2026** - Crude terrain generation with chunk system and height-based color. Major refactoring incoming...
+5/27 - Refactor Part 1&2 done, 3 on the way
 <img width="771" height="471" alt="image" src="https://github.com/user-attachments/assets/d01d3115-1cc1-4d15-8ea9-9c0c05edfb3c" />
 
 ## About Turbulent
@@ -44,9 +45,10 @@ such as those in the "Graphics Programming" Discord.
 ## Monster Refactors
 `[-]` = In Progress | `[x]` = Done | `[ ]` = Planned
 
-- [-] MR-01 - Basic Cleanup from class projects, ~~basic scene abstraction~~
-- [ ] MR-02 - Proper Input handler cleanup
-- [ ] MR-03 - Safety Checks and exception handling
+- [x] MR-01 - Basic Cleanup from class projects, ~~basic scene abstraction~~
+- [x] MR-02 - Proper Input handler cleanup
+- [ ] MR-03 - Renderer abstraction and renderObjects
+- [ ] MR-04 - Safety Checks and exception handling
 - [ ] more to come...
 
 ## Built With
