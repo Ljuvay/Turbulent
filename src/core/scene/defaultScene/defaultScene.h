@@ -8,6 +8,7 @@
 #include "scene.h"
 #include "resourceManager.h"
 #include "meshRenderer.h"
+#include "newRenderer.h"
 #include "shader.h"
 #include "vertex.h"
 #include "terrain.h"
@@ -41,7 +42,7 @@ private:
 	float _rotation = 0.0f;
 
 	// Temp b4 refactor
-	meshRenderer* _TerrainRenderer = nullptr;
+	uint32_t terrainMeshID = 0;
 };
 
 #endif // !DEFAULTSCENE_H

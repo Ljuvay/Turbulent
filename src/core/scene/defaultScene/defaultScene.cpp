@@ -16,17 +16,21 @@ void defaultScene::init()
 	glGenVertexArrays(1, &_gridVAO);
 
 	_RM->loadResources();
+	_NRenderer->setResources(_RM.get());
 
-	_MRenderer->updateGPU(_RM->getMeshData("cube").vertices, _RM->getMeshData("cube").indices);
+	//_MRenderer->updateGPU(_RM->getMeshData("cube").vertices, _RM->getMeshData("cube").indices);
 
 	terrSettings tSet;
 	df_terrain = std::make_unique<terrain>(tSet);
 	df_terrain->buildTerrain();
 
-	_TerrainRenderer = new meshRenderer();
-
 	auto [verts, indices] = df_terrain->toMeshData();
-	_TerrainRenderer->updateGPU(verts, indices);
+	Mesh terrainMesh;
+	terrainMesh.name = "terrain";
+	terrainMesh.vertices = verts;
+	terrainMesh.indices = indices;
+	_RM->meshes().addMesh(terrainMesh, "terrain");
+	terrainMeshID = _RM->meshes().uploadMesh("terrain");
 }
 
 void defaultScene::update(float dt, const Window& window)
@@ -51,26 +55,36 @@ void defaultScene::render(const Window& window)
 	* 
 	* renderer.end();
 	*/
-
+	_NRenderer->beginFrame();
 
 	_Camera->setPerspective((float)window.getWidth() / (float)window.getHeight());
 	
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), _Camera->getPerspective(), 0.1f, 10000.0f);
-	glm::mat4 view = _Camera->GetViewMatrix();
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::rotate(model, glm::radians(_rotation), glm::vec3(-1.0f, 1.0f, -1.0f));
+	_NRenderer->setViewProj(_Camera->GetViewMatrix(), projection);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	renderObject cubeObject;
+	
+	cubeObject.meshID = _RM->meshes().meshIDfromName("cube");
+	cubeObject.shaderID = _RM->shaders().shaderIDfromName("defaultMesh");
+	cubeObject.worldTransform = glm::mat4(1.0f);
+	_NRenderer->submitItem(cubeObject);
 
-	Shader& debugGridShader = _RM->getShaderData("debugGrid");
-	debugGridShader.use();
-	debugGridShader.setMat4("view", view);
-	debugGridShader.setMat4("projection", projection);
-	debugGridShader.setVec3("camPos", _Camera->Position);
+	renderObject terrainObject;
+	terrainObject.meshID = terrainMeshID;
+	terrainObject.shaderID = _RM->shaders().shaderIDfromName("defaultTerrain");
+	terrainObject.worldTransform = glm::mat4(1.0f);
+	_NRenderer->submitItem(terrainObject);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_FALSE);
+
+	uint32_t gridID = _RM->shaders().shaderIDfromName("debugGrid");
+	Shader& gridShader = _RM->shaders().getShaderData(gridID);	gridShader.use();
+	gridShader.setMat4("view", _Camera->GetViewMatrix());
+	gridShader.setMat4("projection", projection);
+	gridShader.setVec3("camPos", _Camera->Position);
 
 	glBindVertexArray(_gridVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -78,33 +92,9 @@ void defaultScene::render(const Window& window)
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 
-	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
+	_NRenderer->flush();
 
-	if (df_sSettings.meshFill)
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-	else
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	}
-
-	Shader& defaultShader = _RM->getShaderData("defaultMesh");
-	defaultShader.use();
-	defaultShader.setMat4("view", view);
-	defaultShader.setMat4("model", model);
-	defaultShader.setMat4("projection", projection);
-	_MRenderer->drawMesh();
-
-	Shader& terrainShader = _RM->getShaderData("defaultTerrain");
-	terrainShader.use();
-	terrainShader.setMat4("view", view);
-	terrainShader.setMat4("model", glm::mat4(1.0f));
-	terrainShader.setMat4("projection", projection);
-	terrSettings tSet;
-	terrainShader.setFloat("maxTerrainHeight", tSet.terrHeight);
-	_TerrainRenderer->drawMesh();
+	_NRenderer->endFrame();
 }
 
 void defaultScene::inputHandler(Window& window, float dt)

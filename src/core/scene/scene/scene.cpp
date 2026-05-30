@@ -12,12 +12,14 @@
 #include "shader.h"
 #include "camera.h"
 #include "window.h"
+#include "newRenderer.h"
 #include "resourceManager.h"
 #include "mesh.h"
 #include "vertex.h"
 
 Scene::Scene()
 	:
+	_NRenderer(std::make_unique<newRenderer>()),
 	_BBRenderer(std::make_unique<BoundingBoxRenderer>()),
 	_MRenderer(std::make_unique<meshRenderer>()),
 	_PRenderer(std::make_unique<particleRenderer>()),

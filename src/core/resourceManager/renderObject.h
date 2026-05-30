@@ -9,17 +9,6 @@
 #include "mesh.h"
 #include "shader.h"
 
-struct renderObject
-{
-	Mesh* sourseMesh;
-	Shader* sourceShader;
-	//Material later
-
-	glm::mat4 worldTransform;
-
-	uint64_t objectID;
-};
-
 struct GLState
 {
 	bool wireframe = false;
@@ -27,6 +16,23 @@ struct GLState
 	bool depthMask = true;
 	bool blend = false;
 	bool cullFace = true;
+};
+
+// GET THIS OUT OF HERE ASAP
+struct Material
+{
+	// Stuff like metallic, roughness, etc
+	// Take a look at blender to help
+	glm::vec3 albedo = glm::vec3(0.0f);
+};
+
+struct renderObject
+{
+	uint32_t meshID = 0;
+	uint32_t shaderID = 0;
+	Material material;
+	glm::mat4 worldTransform = glm::mat4(1.0f);
+	GLState state;
 };
 
 #endif // !RENDEROBJECT_H

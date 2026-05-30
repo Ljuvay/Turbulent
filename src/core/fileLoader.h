@@ -19,7 +19,7 @@ namespace fileLoader
 	// OBJ Mesh loader (:
 	// Can only handle single object triangulated obj files
 	// For now if I need a file just blender>editmode>select all>vertices>triangulate (or quads to tris)
-	Mesh loadObj(const std::string filePath){
+	inline Mesh loadObj(const std::string& filePath){
 		//This is the actual mesh we're outputting
 		Mesh outMesh;
 

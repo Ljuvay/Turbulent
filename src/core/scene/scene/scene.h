@@ -15,6 +15,7 @@
 class particleRenderer;
 class BoundingBoxRenderer;
 class meshRenderer;
+class newRenderer;
 
 class Camera;
 class Shader;
@@ -35,6 +36,7 @@ public:
 	}
 
 protected:
+	std::unique_ptr<newRenderer> _NRenderer;
 	std::unique_ptr<BoundingBoxRenderer> _BBRenderer;
 	std::unique_ptr<meshRenderer> _MRenderer;
 	std::unique_ptr<particleRenderer> _PRenderer;
