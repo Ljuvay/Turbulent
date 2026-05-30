@@ -5,7 +5,9 @@ as a way to learn graphics and physics programming from the ground up.
 
 ## Last Updated
 **May 2026**
-<img width="771" height="471" alt="image" src="https://github.com/user-attachments/assets/d01d3115-1cc1-4d15-8ea9-9c0c05edfb3c" />
+Blinn-Phong Lighting added
+
+<img width="1912" height="1086" alt="image" src="https://github.com/user-attachments/assets/6571cc1a-da60-45ef-a9be-d754c1e503fa" />
 
 ## About Turbulent
 Turbulent is planned to be an ode to some of my favorite games I played
@@ -34,7 +36,7 @@ such as those in the "Graphics Programming" Discord.
 - [x] Scene Management
 - [x] Debug Grid
 - [x] Basic Heightmap Terrain
-- [ ] Basic Blinn-phong lighting
+- [x] Basic Blinn-phong lighting
 - [ ] LOD and Tessellation shaders
 - [ ] more to come...
 
@@ -45,7 +47,8 @@ such as those in the "Graphics Programming" Discord.
 - [x] MR-02 - Proper Input handler cleanup
 - [x] MR-03 - Renderer abstraction and renderObjects
 - [x] MR-04 - Re-do Resource Managers for cleanliness
-- [ ] MR-05 - Safety Checks and exception handling
+- [ ] MR-05 - Clean-up and ImGui integration
+- [ ] MR-06 - Safety Checks and exception handling
 - [ ] more to come...
 
 ## Built With
