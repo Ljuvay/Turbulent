@@ -7,8 +7,7 @@
 
 #include "scene.h"
 #include "resourceManager.h"
-#include "meshRenderer.h"
-#include "newRenderer.h"
+#include "forwardRenderer.h"
 #include "shader.h"
 #include "vertex.h"
 #include "terrain.h"

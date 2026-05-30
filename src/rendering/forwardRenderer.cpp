@@ -3,19 +3,19 @@
 
 #include <vector>
 
-#include "newRenderer.h"
+#include "forwardRenderer.h"
 
-void newRenderer::init()
+void forwardRenderer::init()
 {
 	renderQueue.reserve(1000); // Just do max 1000 for now
 }
 
-void newRenderer::setResources(ResourceManager* rm)
+void forwardRenderer::setResources(ResourceManager* rm)
 {
 	resources = rm;
 }
 
-void newRenderer::beginFrame()
+void forwardRenderer::beginFrame()
 {
 	renderQueue.clear();
 
@@ -23,13 +23,13 @@ void newRenderer::beginFrame()
 	glEnable(GL_CULL_FACE);
 }
 
-void newRenderer::submitItem(const renderObject& renObj)
+void forwardRenderer::submitItem(const renderObject& renObj)
 {
 	renderQueue.push_back(renObj);
 }
 
 // Need to eventually sort by GLState
-void newRenderer::flush()
+void forwardRenderer::flush()
 {
 	for (const auto& obj : renderQueue)
 	{
@@ -60,17 +60,17 @@ void newRenderer::flush()
 	}
 }
 
-void newRenderer::endFrame()
+void forwardRenderer::endFrame()
 {
 	// Leave empty for now
 }
 
-void newRenderer::setViewPos(const glm::vec3 viewPos)
+void forwardRenderer::setViewPos(const glm::vec3 viewPos)
 {
 	this->viewPos = viewPos;
 }
 
-void newRenderer::setViewProj(const glm::mat4& view, const glm::mat4 projection)
+void forwardRenderer::setViewProj(const glm::mat4& view, const glm::mat4 projection)
 {
 	this->view = view;
 	this->projection = projection;

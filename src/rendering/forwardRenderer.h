@@ -1,5 +1,5 @@
-#ifndef NEWRENDERER_H
-#define NEWRENDERER_H
+#ifndef FORWARDRENDERER_H
+#define FORWARDRENDERER_H
 
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
@@ -11,7 +11,7 @@
 #include "mesh.h"
 #include "vertex.h"
 
-class newRenderer
+class forwardRenderer
 {
 public:
 	void init();
@@ -35,4 +35,4 @@ private:
 	glm::mat4 projection = glm::mat4(0.0f);
 };
 
-#endif // !NEWRENDERER_H
+#endif // !FORWARDRENDERER_H

@@ -12,10 +12,7 @@
 
 #include "window.h"
 
-class particleRenderer;
-class BoundingBoxRenderer;
-class meshRenderer;
-class newRenderer;
+class forwardRenderer;
 
 class Camera;
 class Shader;
@@ -36,10 +33,7 @@ public:
 	}
 
 protected:
-	std::unique_ptr<newRenderer> _NRenderer;
-	std::unique_ptr<BoundingBoxRenderer> _BBRenderer;
-	std::unique_ptr<meshRenderer> _MRenderer;
-	std::unique_ptr<particleRenderer> _PRenderer;
+	std::unique_ptr<forwardRenderer> _NRenderer;
 	std::unique_ptr<Camera> _Camera;
 	std::shared_ptr<ResourceManager> _RM;
 

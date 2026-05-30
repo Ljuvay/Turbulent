@@ -6,23 +6,17 @@
 #include <string>
 
 #include "scene.h"
-#include "boundingBoxRenderer.h"
-#include "particleRenderer.h"
-#include "meshRenderer.h"
 #include "shader.h"
 #include "camera.h"
 #include "window.h"
-#include "newRenderer.h"
+#include "forwardRenderer.h"
 #include "resourceManager.h"
 #include "mesh.h"
 #include "vertex.h"
 
 Scene::Scene()
 	:
-	_NRenderer(std::make_unique<newRenderer>()),
-	_BBRenderer(std::make_unique<BoundingBoxRenderer>()),
-	_MRenderer(std::make_unique<meshRenderer>()),
-	_PRenderer(std::make_unique<particleRenderer>()),
+	_NRenderer(std::make_unique<forwardRenderer>()),
 	_Camera(std::make_unique<Camera>()),
 	_RM(std::make_shared<ResourceManager>())
 {
