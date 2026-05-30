@@ -44,6 +44,7 @@ void newRenderer::flush()
 		//Material* mat = resourceManager.
 		
 		shader->use();
+		shader->setVec3("viewPos", viewPos);
 		shader->setMat4("model", obj.worldTransform);
 		shader->setMat4("view", view);
 		shader->setMat4("projection", projection);
@@ -62,6 +63,11 @@ void newRenderer::flush()
 void newRenderer::endFrame()
 {
 	// Leave empty for now
+}
+
+void newRenderer::setViewPos(const glm::vec3 viewPos)
+{
+	this->viewPos = viewPos;
 }
 
 void newRenderer::setViewProj(const glm::mat4& view, const glm::mat4 projection)

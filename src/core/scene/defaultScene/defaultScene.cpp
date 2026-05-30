@@ -61,15 +61,30 @@ void defaultScene::render(const Window& window)
 	
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), _Camera->getPerspective(), 0.1f, 10000.0f);
 	_NRenderer->setViewProj(_Camera->GetViewMatrix(), projection);
+	_NRenderer->setViewPos(_Camera->Position);
 
 	renderObject cubeObject;
 	
 	cubeObject.meshID = _RM->meshes().meshIDfromName("cube");
-	cubeObject.shaderID = _RM->shaders().shaderIDfromName("defaultMesh");
-	cubeObject.worldTransform = glm::mat4(1.0f);
+	cubeObject.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
+	cubeObject.worldTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 150.0f, 0.0f));
+	cubeObject.worldTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(_rotation), glm::vec3(1.0,1.0,0.5));
+	cubeObject.worldTransform *= glm::scale(glm::mat4(1.0f), glm::vec3(50.0f));
 	_NRenderer->submitItem(cubeObject);
 
+	renderObject monkeyObject;
+
+	monkeyObject.meshID = _RM->meshes().meshIDfromName("monkey");
+	auto it = _RM->shaders().shaderIDfromName("blinnPhong");
+	_RM->shaders().getShaderData(it).setVec3("lightPos", glm::vec3(0.0f, 600.0f, 200.0f));
+	monkeyObject.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
+	monkeyObject.worldTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 400.0f, 0.0f));
+	monkeyObject.worldTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(_rotation), glm::vec3(1.0, 1.0, 0.5));
+	monkeyObject.worldTransform *= glm::scale(glm::mat4(1.0f), glm::vec3(35.0f));
+	_NRenderer->submitItem(monkeyObject);
+
 	renderObject terrainObject;
+	terrainObject.state.wireframe = false;
 	terrainObject.meshID = terrainMeshID;
 	terrainObject.shaderID = _RM->shaders().shaderIDfromName("defaultTerrain");
 	terrainObject.worldTransform = glm::mat4(1.0f);
@@ -119,4 +134,7 @@ void defaultScene::inputHandler(Window& window, float dt)
 			df_sSettings.meshFill = true;
 		}
 	}
+
+	if (Input::KeyDown(GLFW_KEY_LEFT_SHIFT)) _Camera->CameraSpeed = 300.0f;
+	else { _Camera->CameraSpeed = 50.0f; }
 }

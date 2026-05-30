@@ -11,11 +11,13 @@ layout(location = 2) in vec2 uv;
 out vec3 vPos;
 out vec3 vNorm;
 out vec3 FragPos;
+flat out vec3 vColor;
 
 void main()
 {
     vPos = position;
-    vNorm = normal;
+    vNorm = mat3(transpose(inverse(model))) * normal;
+    vColor = vec3(0.5, 0.5, 1.0);
     gl_Position = projection * view * model * vec4(position, 1.0);
     FragPos = vec3(model * vec4(position, 1.0));
 }

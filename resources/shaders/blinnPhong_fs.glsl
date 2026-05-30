@@ -1,32 +1,20 @@
 #version 330 core
 
+//uniform vec3 lightPos;
 uniform vec3 viewPos;
 
 out vec4 FragColor;
 
 in vec3 vPos;
 in vec3 vNorm;
-in vec3 vColor;
 in vec3 FragPos;
-
-uniform float maxTerrainHeight;
+flat in vec3 vColor;
 
 void main()
 {
-
-	// Solid terrain color
-	float hVal = (vPos.y + 13) / 220.0; // Min - Max
-	vec3 vColor;
-
-	if(hVal < 0.15){vColor = vec3(0.75, 0.7, 0.5);} //Sand
-	else if(hVal <= 0.3){vColor = vec3(0.12, 0.25, 0.0);} //Grass
-	else if(hVal <= 0.85){vColor = vec3(0.5);} //Stone
-	else{vColor = vec3(1.0);}
-
-	// Phong
-	vec3 lightColor = vec3(1.0, 1.0, 1.0);
+    vec3 lightColor = vec3(1.0, 0.5, 1.0);
     vec3 lightPos = vec3(0.0, 600.0, 200.0);
-    float ambientStrength = 0.2;
+    float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * lightColor;
 
     vec3 norm = normalize(vNorm);
@@ -49,7 +37,7 @@ void main()
     vec3 specular = specularStrength * spec * lightColor;
 
     vec3 result = (ambient + diffuse + specular) * vColor;
-	FragColor = vec4(result, 1.0);
-	//FragColor = vec4(normalize(vNorm) * 0.5 + 0.5, 1.0);
+    FragColor = vec4(result, 1.0);
+    //FragColor = vec4(normalize(vNorm) * 0.5 + 0.5, 1.0);
 }
 

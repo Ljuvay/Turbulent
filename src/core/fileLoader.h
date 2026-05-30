@@ -23,7 +23,7 @@ namespace fileLoader
 		//This is the actual mesh we're outputting
 		Mesh outMesh;
 
-		std::unordered_map<int, unsigned int> positionIndexMap;
+		std::unordered_map<uint64_t, unsigned int> positionIndexMap;
 
 		std::vector<glm::vec3> positions;
 		std::vector<glm::vec3> normals;
@@ -76,46 +76,41 @@ namespace fileLoader
 				std::string identifier, token;
 				ss >> identifier;
 
-				std::vector<unsigned int> verts, uvIdx, normIdx;
+				struct FaceVert { int vIdx, vtIdx, vnIdx; };
+				std::vector<FaceVert> faceVerts;
 
+				//std::string token;
 				while (ss >> token) {
-					unsigned int vIdx = 0, vtIdx = 0, vnIdx = 0;
-					if (token.find('/') != std::string::npos) {
-						std::replace(line.begin(), line.end(), '/', ' ');
-						std::istringstream ts(token);
-						ts >> vIdx;
-						if (!normals.empty()) { ts >> vtIdx >> vnIdx; }
-					}
-					else { vIdx = std::stoi(token); }
-
-
-					verts.push_back(vIdx);
-					if (vtIdx > 0) { uvIdx.push_back(vtIdx); }
-					if (vnIdx > 0) { normIdx.push_back(vnIdx); }
+					FaceVert fv = { 0, 0, 0 };
+					std::replace(token.begin(), token.end(), '/', ' ');
+					std::istringstream ts(token);
+					ts >> fv.vIdx;
+					ts >> fv.vtIdx;
+					ts >> fv.vnIdx;
+					faceVerts.push_back(fv);
 				}
 				
 				for (int k = 0; k < 3; k++) {
-					int positionID = verts[k] - 1;
+					auto& fv = faceVerts[k];
+					uint64_t key = ((uint64_t)fv.vIdx << 32) |
+						((uint64_t)(fv.vnIdx & 0xFFFF) << 16) |
+						(fv.vtIdx & 0xFFFF);
 
-					if (positionIndexMap.count(positionID)) {
-						outMesh.indices.push_back(positionIndexMap[positionID]);
+					auto it = positionIndexMap.find(key);
+					if (it != positionIndexMap.end()) {
+						outMesh.indices.push_back(it->second);
 					}
 					else {
 						Vertex v;
-						v.position = positions[positionID];
-						if (!normals.empty() && normIdx.size() >= 3) {
-							v.normal = normals[normIdx[k] - 1];
-						}
-						if (!uvs.empty() && uvIdx.size() >= 3) {
-							v.uv = uvs[uvIdx[k] - 1];
-						}
+						v.position = positions[fv.vIdx - 1];
+						if (fv.vnIdx > 0) v.normal = normals[fv.vnIdx - 1];
+						if (fv.vtIdx > 0) v.uv = uvs[fv.vtIdx - 1];
 
 						unsigned int newID = outMesh.vertices.size();
 						outMesh.vertices.push_back(v);
 						outMesh.indices.push_back(newID);
-						positionIndexMap[positionID] = newID;
+						positionIndexMap[key] = newID;
 					}
-
 				}
 			}
 			

@@ -20,6 +20,7 @@ public:
 	Chunk& operator=(Chunk&&) = delete;
 
 	void build();
+	void calcSurfaceNormals();
 
 	const std::vector<Vertex>& getVertices() const { return terrainVertices; }
 	const std::vector<uint32_t>& getIndices() const { return indices; }

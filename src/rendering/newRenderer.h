@@ -22,6 +22,7 @@ public:
 	void flush();
 	void endFrame();
 
+	void setViewPos(const glm::vec3 viewPos);
 	void setViewProj(const glm::mat4& view, const glm::mat4 proj);
 
 private:
@@ -29,6 +30,7 @@ private:
 
 	std::vector<renderObject> renderQueue;
 
+	glm::vec3 viewPos;
 	glm::mat4 view = glm::mat4(0.0f);
 	glm::mat4 projection = glm::mat4(0.0f);
 };

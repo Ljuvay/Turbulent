@@ -22,7 +22,7 @@ struct gpuMesh
 
 		VBO = 0;
 		EBO = 0;
-		EBO = 0;
+		VAO = 0;
 		indexCount = 0;
 	}
 };

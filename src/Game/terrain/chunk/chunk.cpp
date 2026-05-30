@@ -6,6 +6,35 @@
 #include "perlin.h"
 #include "vertex.h"
 
+void Chunk::calcSurfaceNormals()
+{
+	for (auto& v : terrainVertices)
+	{
+		v.normal = glm::vec3(0.0f);
+	}
+
+	Vertex* v0; 
+	Vertex* v1;
+	Vertex* v2;
+	for (int i = 0; i < indices.size(); i += 3)
+	{
+		v0 = &terrainVertices[indices[i]];
+		v1 = &terrainVertices[indices[i + 1]];
+		v2 = &terrainVertices[indices[i + 2]];
+		glm::vec3 triNorm = glm::normalize(
+			glm::cross(v1->position - v2->position,
+				v2->position - v0->position));
+		v0->normal += triNorm;
+		v1->normal += triNorm;
+		v2->normal += triNorm;
+	}
+
+	for (auto& v : terrainVertices)
+	{
+		v.normal = glm::normalize(v.normal);
+	}
+}
+
 Chunk::Chunk(glm::ivec2 coord, int size, int32_t seed, int resolution, const terrSettings& settings) :
 	coord(coord),
 	size(size),
@@ -36,6 +65,7 @@ Chunk::Chunk(glm::ivec2 coord, int size, int32_t seed, int resolution, const ter
 			float height = (perlinVal - 0.01f) * t_settings.terrHeight;
 			*/
 
+
 			Vertex tVert{
 				{worldX, height, worldZ}, // Position
 				{0.0f, 0.0f, 0.0f},	// Normal
@@ -63,6 +93,8 @@ Chunk::Chunk(glm::ivec2 coord, int size, int32_t seed, int resolution, const ter
 			indices.push_back(bottomLeft);
 		}
 	}
+
+	calcSurfaceNormals();
 }
 
 void Chunk::build()
