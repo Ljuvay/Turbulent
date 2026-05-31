@@ -19,6 +19,7 @@ public:
 
 	void beginFrame();
 	void submitItem(const renderObject& renObj);
+	void submitLight(const lightSource& lightObj);
 	void flush();
 	void endFrame();
 
@@ -29,6 +30,7 @@ private:
 	ResourceManager* resources = nullptr;
 
 	std::vector<renderObject> renderQueue;
+	std::vector<lightSource> sceneLights;
 
 	glm::vec3 viewPos;
 	glm::mat4 view = glm::mat4(0.0f);

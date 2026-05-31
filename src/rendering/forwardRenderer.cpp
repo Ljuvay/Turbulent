@@ -8,6 +8,7 @@
 void forwardRenderer::init()
 {
 	renderQueue.reserve(1000); // Just do max 1000 for now
+	sceneLights.reserve(16);
 }
 
 void forwardRenderer::setResources(ResourceManager* rm)
@@ -18,6 +19,7 @@ void forwardRenderer::setResources(ResourceManager* rm)
 void forwardRenderer::beginFrame()
 {
 	renderQueue.clear();
+	sceneLights.clear();
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -27,6 +29,12 @@ void forwardRenderer::submitItem(const renderObject& renObj)
 {
 	renderQueue.push_back(renObj);
 }
+
+void forwardRenderer::submitLight(const lightSource& lightObj)
+{
+	sceneLights.push_back(lightObj);
+}
+
 
 // Need to eventually sort by GLState
 void forwardRenderer::flush()
@@ -48,6 +56,21 @@ void forwardRenderer::flush()
 		shader->setMat4("model", obj.worldTransform);
 		shader->setMat4("view", view);
 		shader->setMat4("projection", projection);
+
+		shader->setVec3("ambient", obj.material.ambient);
+		shader->setVec3("diffuse", obj.material.diffuse);
+		shader->setVec3("specular", obj.material.specular);
+		shader->setFloat("shininess", obj.material.shininess);
+
+		shader->setInt("numLights", sceneLights.size());
+		for (int i = 0; i < sceneLights.size(); i++)
+		{
+			std::string base = "lights[" + std::to_string(i) + "].";
+			shader->setVec3(base + "position", sceneLights[i].position);
+			shader->setVec3(base + "color", sceneLights[i].color);
+			shader->setFloat(base + "strength", sceneLights[i].strength);
+		}
+
 		// Set material uniforms
 		glBindVertexArray(mesh->VAO);
 

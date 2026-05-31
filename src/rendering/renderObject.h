@@ -18,12 +18,19 @@ struct GLState
 	bool cullFace = true;
 };
 
-// GET THIS OUT OF HERE ASAP
+struct lightSource
+{
+	glm::vec3 position = glm::vec3(0.0f);
+	glm::vec3 color = glm::vec3(0.0f);
+	float strength = 0.1f;
+};
+
 struct Material
 {
-	// Stuff like metallic, roughness, etc
-	// Take a look at blender to help
-	glm::vec3 albedo = glm::vec3(0.0f);
+	glm::vec3 ambient = glm::vec3(0.0f);
+	glm::vec3 diffuse = glm::vec3(0.0f);
+	glm::vec3 specular = glm::vec3(0.0f);
+	float shininess = 0.0f;
 };
 
 struct renderObject

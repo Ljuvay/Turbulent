@@ -38,7 +38,6 @@ void defaultScene::update(float dt, const Window& window)
 	/*
 	We need to get this to
 	player.update(dt);
-	terrainSystem.update(camera.position);
 	*/
 	_rotation += 50.0f * dt;
 }
@@ -63,6 +62,25 @@ void defaultScene::render(const Window& window)
 	_NRenderer->setViewProj(_Camera->GetViewMatrix(), projection);
 	_NRenderer->setViewPos(_Camera->Position);
 
+	lightSource l1;
+	l1.color = glm::vec3(1.0);
+	l1.position = { 0.0f, 600.0f, 200.0f };
+	l1.strength = 1.0f;
+
+	lightSource l2;
+	l2.color = glm::vec3(0.5f, 1.0f, 0.2f);
+	l2.position = { 100.0f, 300.0f, 50.0f };
+	l2.strength = 1.0f;
+
+	lightSource l3;
+	l3.color = glm::vec3(1.0f, 0.2f, 0.5f);
+	l3.position = { 50.0f, 25.0f, 25.0f };
+	l3.strength = 1.0f;
+
+	_NRenderer->submitLight(l1);
+	_NRenderer->submitLight(l2);
+	_NRenderer->submitLight(l3);
+
 	renderObject cubeObject;
 	
 	cubeObject.meshID = _RM->meshes().meshIDfromName("cube");
@@ -70,17 +88,23 @@ void defaultScene::render(const Window& window)
 	cubeObject.worldTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 150.0f, 0.0f));
 	cubeObject.worldTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(_rotation), glm::vec3(1.0,1.0,0.5));
 	cubeObject.worldTransform *= glm::scale(glm::mat4(1.0f), glm::vec3(50.0f));
+	cubeObject.material.ambient = glm::vec3(0.2f);
+	cubeObject.material.diffuse = glm::vec3(0.8f);
+	cubeObject.material.specular = glm::vec3(0.5f);
+	cubeObject.material.shininess = 32.0f;
 	_NRenderer->submitItem(cubeObject);
 
 	renderObject monkeyObject;
 
 	monkeyObject.meshID = _RM->meshes().meshIDfromName("monkey");
-	auto it = _RM->shaders().shaderIDfromName("blinnPhong");
-	_RM->shaders().getShaderData(it).setVec3("lightPos", glm::vec3(0.0f, 600.0f, 200.0f));
 	monkeyObject.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
 	monkeyObject.worldTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 400.0f, 0.0f));
 	monkeyObject.worldTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(_rotation), glm::vec3(1.0, 1.0, 0.5));
 	monkeyObject.worldTransform *= glm::scale(glm::mat4(1.0f), glm::vec3(35.0f));
+	monkeyObject.material.ambient = glm::vec3(0.2f);
+	monkeyObject.material.diffuse = glm::vec3(0.8f);
+	monkeyObject.material.specular = glm::vec3(0.5f);
+	monkeyObject.material.shininess = 32.0f;
 	_NRenderer->submitItem(monkeyObject);
 
 	renderObject terrainObject;
@@ -88,6 +112,10 @@ void defaultScene::render(const Window& window)
 	terrainObject.meshID = terrainMeshID;
 	terrainObject.shaderID = _RM->shaders().shaderIDfromName("defaultTerrain");
 	terrainObject.worldTransform = glm::mat4(1.0f);
+	terrainObject.material.ambient = glm::vec3(0.5f);
+	terrainObject.material.diffuse = glm::vec3(0.8f);
+	terrainObject.material.specular = glm::vec3(0.5f);
+	terrainObject.material.shininess = 32.0f;
 	_NRenderer->submitItem(terrainObject);
 
 	glEnable(GL_BLEND);

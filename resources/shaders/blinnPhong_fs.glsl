@@ -1,6 +1,22 @@
 #version 330 core
 
-//uniform vec3 lightPos;
+#define MAX_LIGHTS 8
+
+struct LightSource
+{
+    vec3 position;
+    vec3 color;
+    float strength;
+};
+
+uniform LightSource lights[MAX_LIGHTS];
+uniform int numLights;
+
+uniform vec3 ambient;
+uniform vec3 diffuse;
+uniform vec3 specular;
+uniform float shininess;
+
 uniform vec3 viewPos;
 
 out vec4 FragColor;
@@ -8,36 +24,36 @@ out vec4 FragColor;
 in vec3 vPos;
 in vec3 vNorm;
 in vec3 FragPos;
-flat in vec3 vColor;
 
 void main()
 {
-    vec3 lightColor = vec3(1.0, 0.5, 1.0);
-    vec3 lightPos = vec3(0.0, 600.0, 200.0);
-    float ambientStrength = 0.1;
-    vec3 ambient = ambientStrength * lightColor;
+    vec3 result = ambient;
 
     vec3 norm = normalize(vNorm);
-    vec3 lightDir = normalize(lightPos - FragPos);
-
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = diff * lightColor;
-
-    float specularStrength = 0.5;
     vec3 viewDir = normalize(viewPos - FragPos);
 
-    // Phong
-    //vec3 reflectDir = reflect(-lightDir, norm);
-    //float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    float lightFade = 0.00001;
+    float lightFadeAcc = 0.000001;
 
-    // Blinn-Phong
-    vec3 halfDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(norm, halfDir), 0.0), 32.0);
+    for(int i = 0; i < numLights; i++)
+    {
+       float dist = length(lights[i].position - FragPos);
+       float attenuation = 1.0 / (1.0 + lightFade * dist + lightFadeAcc * dist * dist);
 
-    vec3 specular = specularStrength * spec * lightColor;
+       vec3 lightDir = normalize(lights[i].position - FragPos);
 
-    vec3 result = (ambient + diffuse + specular) * vColor;
-    FragColor = vec4(result, 1.0);
-    //FragColor = vec4(normalize(vNorm) * 0.5 + 0.5, 1.0);
+       float diff = max(dot(norm, lightDir), 0.0);
+       vec3 diffAccum = diff * lights[i].color * lights[i].strength * attenuation;
+
+       float specularStrength = shininess;
+
+       vec3 halfDir = normalize(lightDir + viewDir);
+       float spec = pow(max(dot(norm, halfDir), 0.0), shininess);
+
+       vec3 specAccum = lights[i].strength * spec * lights[i].color * specular * attenuation;
+
+       result += (diffAccum + specAccum);
+    }
+
+    FragColor = vec4(result * diffuse, 1.0);
 }
-
