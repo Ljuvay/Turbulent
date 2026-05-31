@@ -31,6 +31,7 @@ struct Material
 	glm::vec3 diffuse = glm::vec3(0.0f);
 	glm::vec3 specular = glm::vec3(0.0f);
 	float shininess = 0.0f;
+	bool useAmbient = true;
 };
 
 struct renderObject

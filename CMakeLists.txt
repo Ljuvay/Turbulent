@@ -21,7 +21,15 @@ find_package(OpenMP REQUIRED)
 
 # App
 file(GLOB_RECURSE APP_SOURCES "src/*.cpp")
-add_executable(app ${APP_SOURCES})
+
+# ImGui
+file(GLOB IMGUI_SOURCES
+    external/imgui/*.cpp
+)
+add_executable(app 
+    ${APP_SOURCES}
+    ${IMGUI_SOURCES}
+)
 
 # Gather include
 file(GLOB_RECURSE ALL_HEADERS "src/*.h")
@@ -37,6 +45,7 @@ target_include_directories(app PUBLIC
     external/glad/include
     external/glfw/include
     external/glm
+    external/imgui
 )
 
 set_target_properties(app PROPERTIES

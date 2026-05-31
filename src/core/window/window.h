@@ -21,6 +21,7 @@ public:
 	void beginFrame();
 	void endFrame();
 
+	bool editorMode = false;
 private:
 	int _SCR_WIDTH;
 	int _SCR_HEIGHT;

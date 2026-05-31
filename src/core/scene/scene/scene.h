@@ -28,9 +28,13 @@ public:
 	virtual void update(float dt, const Window& window) = 0;
 	virtual void render(const Window& window) = 0;
 	virtual void inputHandler(Window& window, float dt) = 0;
+	virtual void onImGui() = 0;
 	Camera& getCamera() {
 		return *_Camera;
 	}
+
+	float fps = 0.0f;
+	float frameTime = 0.0f;
 
 protected:
 	std::unique_ptr<forwardRenderer> _NRenderer;

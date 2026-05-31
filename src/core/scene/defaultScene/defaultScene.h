@@ -3,6 +3,10 @@
 
 #include <glm/glm.hpp>
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include <iostream>
 
 #include "scene.h"
@@ -31,12 +35,15 @@ public:
 	void render(const Window& window) override;
 	void inputHandler(Window& window, float dt) override;
 
+	void onImGui();
 private:
-	void initResources();
+	std::vector<lightSource> m_lights;
+	std::vector<renderObject> m_objects;
 
 	std::unique_ptr<terrain> df_terrain;
 	sceneSettings df_sSettings;
 
+	bool m_editorMode = false;
 	unsigned int _gridVAO = 0;
 	float _rotation = 0.0f;
 

@@ -109,6 +109,7 @@ void Window::mouseCallback(GLFWwindow* window, double xpos, double ypos)
 	lastX = (float)xpos;
 	lastY = (float)ypos;
 
+	if (win->editorMode) return;
 	win->_scene->getCamera().ProcessMouseMovement(xoffset, yoffset);
 }
 

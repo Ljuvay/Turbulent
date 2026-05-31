@@ -30,3 +30,5 @@ void Scene::update(float dt, const Window& window) {}
 void Scene::render(const Window& window) {}
 
 void Scene::inputHandler(Window& window, float dt) {}
+
+void Scene::onImGui() {}

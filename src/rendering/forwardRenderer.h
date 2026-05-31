@@ -26,6 +26,9 @@ public:
 	void setViewPos(const glm::vec3 viewPos);
 	void setViewProj(const glm::mat4& view, const glm::mat4 proj);
 
+	void drawMesh();
+	void drawParticle();
+
 private:
 	ResourceManager* resources = nullptr;
 
