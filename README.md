@@ -5,9 +5,9 @@ as a way to learn graphics and physics programming from the ground up.
 
 ## Last Updated
 **May 2026**
-Blinn-Phong Lighting added
+Blinn-Phong Lighting added, up to 8 lights!
 
-<img width="1912" height="1086" alt="image" src="https://github.com/user-attachments/assets/6571cc1a-da60-45ef-a9be-d754c1e503fa" />
+<img width="1417" height="840" alt="image" src="https://github.com/user-attachments/assets/f8cc5eb6-bfcb-44f3-99a7-bbb5eecbb320" />
 
 ## About Turbulent
 Turbulent is planned to be an ode to some of my favorite games I played
