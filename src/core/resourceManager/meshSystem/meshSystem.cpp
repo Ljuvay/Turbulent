@@ -117,6 +117,16 @@ Mesh& meshSystem::getMeshData(const std::string& meshName)
 	return *it2->second;
 }
 
+std::vector<std::string> meshSystem::getMeshNames() const
+{
+	std::vector<std::string> names;
+	for (const auto& pair : meshIdContainer)
+	{
+		names.push_back(pair.first);
+	}
+	return names;
+}
+
 gpuMesh& meshSystem::getGPUMesh(uint32_t id)
 {
 	auto it = gpuMeshContainer.find(id);

@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 
+#include <array>
 #include <vector>
 #include <string>
 #include <fstream>
@@ -82,34 +83,47 @@ namespace fileLoader
 				//std::string token;
 				while (ss >> token) {
 					FaceVert fv = { 0, 0, 0 };
-					std::replace(token.begin(), token.end(), '/', ' ');
-					std::istringstream ts(token);
-					ts >> fv.vIdx;
-					ts >> fv.vtIdx;
-					ts >> fv.vnIdx;
+					if (token.find("//") != std::string::npos) {
+						// format: v//vn
+						sscanf(token.c_str(), "%d//%d", &fv.vIdx, &fv.vnIdx);
+						fv.vtIdx = 0;
+					}
+					else {
+						std::replace(token.begin(), token.end(), '/', ' ');
+						std::istringstream ts(token);
+						ts >> fv.vIdx;
+						ts >> fv.vtIdx;
+						ts >> fv.vnIdx;
+					}
 					faceVerts.push_back(fv);
 				}
 				
-				for (int k = 0; k < 3; k++) {
-					auto& fv = faceVerts[k];
-					uint64_t key = ((uint64_t)fv.vIdx << 32) |
-						((uint64_t)(fv.vnIdx & 0xFFFF) << 16) |
-						(fv.vtIdx & 0xFFFF);
-
-					auto it = positionIndexMap.find(key);
-					if (it != positionIndexMap.end()) {
-						outMesh.indices.push_back(it->second);
-					}
-					else {
-						Vertex v;
-						v.position = positions[fv.vIdx - 1];
-						if (fv.vnIdx > 0) v.normal = normals[fv.vnIdx - 1];
-						if (fv.vtIdx > 0) v.uv = uvs[fv.vtIdx - 1];
-
-						unsigned int newID = outMesh.vertices.size();
-						outMesh.vertices.push_back(v);
-						outMesh.indices.push_back(newID);
-						positionIndexMap[key] = newID;
+				if (faceVerts.size() < 3) continue;
+				for (size_t k = 1; k + 1 < faceVerts.size(); k++) {
+					std::array<FaceVert, 3> tri = { faceVerts[0], faceVerts[k], faceVerts[k + 1] };
+					for (auto& fv : tri) {
+						uint64_t key = ((uint64_t)fv.vIdx << 32) |
+							((uint64_t)(fv.vnIdx & 0xFFFF) << 16) |
+							(fv.vtIdx & 0xFFFF);
+						auto it = positionIndexMap.find(key);
+						if (it != positionIndexMap.end()) {
+							outMesh.indices.push_back(it->second);
+						}
+						else {
+							Vertex v;
+							if (fv.vIdx < 1 || fv.vIdx - 1 >= positions.size()) {
+								std::cerr << "Bad vIdx: " << fv.vIdx << " positions size: " << positions.size() << std::endl;
+								continue;
+							}
+							v.position = positions[fv.vIdx - 1];
+							v.position = positions[fv.vIdx - 1];
+							if (fv.vnIdx > 0) v.normal = normals[fv.vnIdx - 1];
+							if (fv.vtIdx > 0) v.uv = uvs[fv.vtIdx - 1];
+							unsigned int newID = outMesh.vertices.size();
+							outMesh.vertices.push_back(v);
+							outMesh.indices.push_back(newID);
+							positionIndexMap[key] = newID;
+						}
 					}
 				}
 			}

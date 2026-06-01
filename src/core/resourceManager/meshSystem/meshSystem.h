@@ -30,6 +30,7 @@ public:
 	bool hasGPUMesh(uint32_t id);
 
 	Mesh& getMeshData(const std::string& meshName);
+	std::vector<std::string> getMeshNames() const;
 
 	gpuMesh& getGPUMesh(uint32_t id); // we need this for flush
 	uint32_t uploadMesh(const std::string& meshName); // Send it to da GPU

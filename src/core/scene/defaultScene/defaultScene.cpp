@@ -55,9 +55,9 @@ void defaultScene::init()
 	renderObject cubeObject;
 	cubeObject.meshID = _RM->meshes().meshIDfromName("cube");
 	cubeObject.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
-	cubeObject.worldTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 150.0f, 0.0f));
-	cubeObject.worldTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(_rotation), glm::vec3(1.0, 1.0, 0.5));
-	cubeObject.worldTransform *= glm::scale(glm::mat4(1.0f), glm::vec3(50.0f));
+	cubeObject.worldTransform.translation = glm::vec3(0.0f, 150.0f, 0.0f);
+	cubeObject.worldTransform.rotation = glm::vec3(0.0);
+	cubeObject.worldTransform.scale = glm::vec3(50.0f);
 	cubeObject.material.ambient = glm::vec3(0.2f);
 	cubeObject.material.diffuse = glm::vec3(0.8f);
 	cubeObject.material.specular = glm::vec3(0.5f);
@@ -66,9 +66,9 @@ void defaultScene::init()
 	renderObject monkeyObject;
 	monkeyObject.meshID = _RM->meshes().meshIDfromName("monkey");
 	monkeyObject.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
-	monkeyObject.worldTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 400.0f, 0.0f));
-	monkeyObject.worldTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(_rotation), glm::vec3(1.0, 1.0, 0.5));
-	monkeyObject.worldTransform *= glm::scale(glm::mat4(1.0f), glm::vec3(35.0f));
+	monkeyObject.worldTransform.translation = glm::vec3(0.0f, 400.0f, 0.0f);
+	monkeyObject.worldTransform.rotation = glm::vec3(0.0);
+	monkeyObject.worldTransform.scale = glm::vec3(50.0f);
 	monkeyObject.material.ambient = glm::vec3(0.2f);
 	monkeyObject.material.diffuse = glm::vec3(0.8f);
 	monkeyObject.material.specular = glm::vec3(0.5f);
@@ -78,7 +78,6 @@ void defaultScene::init()
 	terrainObject.state.wireframe = false;
 	terrainObject.meshID = terrainMeshID;
 	terrainObject.shaderID = _RM->shaders().shaderIDfromName("defaultTerrain");
-	terrainObject.worldTransform = glm::mat4(1.0f);
 	terrainObject.material.ambient = glm::vec3(0.5f);
 	terrainObject.material.diffuse = glm::vec3(0.8f);
 	terrainObject.material.specular = glm::vec3(0.5f);
@@ -127,16 +126,11 @@ void defaultScene::render(const Window& window)
 	{
 		if (ro.meshID == _RM->meshes().meshIDfromName("monkey"))
 		{
-		ro.worldTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 400.0f, 0.0f));
-		ro.worldTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(_rotation), glm::vec3(1.0, 1.0, 0.5));
-		ro.worldTransform *= glm::scale(glm::mat4(1.0f), glm::vec3(35.0f));
+			ro.worldTransform.getWorldTransform();
 		}
 		if (ro.meshID == _RM->meshes().meshIDfromName("cube"))
 		{
-		ro.worldTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 150.0f, 0.0f));
-		ro.worldTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(_rotation), glm::vec3(1.0, 1.0, 0.5));
-		ro.worldTransform *= glm::scale(glm::mat4(1.0f), glm::vec3(50.0f));
-
+			ro.worldTransform.getWorldTransform();
 		}
 
 		_NRenderer->submitItem(ro);
@@ -210,6 +204,7 @@ void defaultScene::onImGui()
 
 	ImGui::Text("FPS: %.1f", fps);
 	ImGui::Text("Frame Time: %.2f ms", frameTime);
+	ImGui::Text("Mode: %s", m_editorMode ? "Editor" : "Play");
 
 	ImGui::Separator();
 
@@ -228,7 +223,7 @@ void defaultScene::onImGui()
 			if (ImGui::CollapsingHeader(("Light [" + std::to_string(i) + "]").c_str()))
 			{
 				ImGui::ColorEdit3(("Color##" + std::to_string(i)).c_str(), glm::value_ptr(m_lights[i].color));
-				ImGui::SliderFloat(("Strength##" + std::to_string(i)).c_str(), &m_lights[i].strength, 0.0, 1.0);
+				ImGui::DragFloat(("Strength##" + std::to_string(i)).c_str(), &m_lights[i].strength, 1.0, 0.0, 128.0);
 				ImGui::DragFloat3(("Position##" + std::to_string(i)).c_str(), glm::value_ptr(m_lights[i].position), 1.0, -1000.0f, 1000.0f);
 			}
 		}
@@ -239,20 +234,33 @@ void defaultScene::onImGui()
 	{
 		ImGui::Indent();
 		for (size_t i = 0; i < m_objects.size(); i++) {
-			if (ImGui::CollapsingHeader(("Objects [" + std::to_string(i) + "]").c_str()))
+			if (ImGui::CollapsingHeader(("Object [" + std::to_string(i) + "]").c_str()))
 			{
 				ImGui::Text("Transform");
+				ImGui::DragFloat3(("Translation##" + std::to_string(i)).c_str(), glm::value_ptr(m_objects[i].worldTransform.translation), 1.0, -1000.0f, 1000.0f);
+				ImGui::DragFloat3(("Rotation##" + std::to_string(i)).c_str(), glm::value_ptr(m_objects[i].worldTransform.rotation), 1.0, -1000.0f, 1000.0f);
+				ImGui::DragFloat3(("Scale##" + std::to_string(i)).c_str(), glm::value_ptr(m_objects[i].worldTransform.scale), 1.0, 0.0f, 1000.0f);
+				float uniformScale = m_objects[i].worldTransform.scale.x;
+				if (ImGui::DragFloat(("Uniform Scale##" + std::to_string(i)).c_str(), &uniformScale, 1.0, 0.0f, 1000.0f))
+				{
+					m_objects[i].worldTransform.scale = glm::vec3(uniformScale);
+				}
 				ImGui::Separator();
 				ImGui::Text("Material");
 				ImGui::ColorEdit3(("Diffuse Color##" + std::to_string(i)).c_str(), glm::value_ptr(m_objects[i].material.diffuse));
 				ImGui::ColorEdit3(("Specular Color##" + std::to_string(i)).c_str(), glm::value_ptr(m_objects[i].material.specular));
-				ImGui::SliderFloat(("Shininess##" + std::to_string(i)).c_str(), &m_objects[i].material.shininess, 0.0, 1.0);
+				ImGui::SliderFloat(("Shininess##" + std::to_string(i)).c_str(), &m_objects[i].material.shininess, 0.0, 64.0);
 				ImGui::Checkbox(("Ambient##" + std::to_string(i)).c_str(), &m_objects[i].material.useAmbient);
 				ImGui::BeginDisabled(!m_objects[i].material.useAmbient);
 				ImGui::ColorEdit3(("Almbient Color##" + std::to_string(i)).c_str(), glm::value_ptr(m_objects[i].material.ambient));
 				ImGui::EndDisabled();
 				ImGui::Separator();
 				ImGui::Text("GLState");
+				ImGui::Checkbox(("Wire Frame##" + std::to_string(i)).c_str(), &m_objects[i].state.wireframe);
+				ImGui::Checkbox(("Depth Test##" + std::to_string(i)).c_str(), &m_objects[i].state.depthTest);
+				ImGui::Checkbox(("Depth Mask##" + std::to_string(i)).c_str(), &m_objects[i].state.depthMask);
+				ImGui::Checkbox(("Blend##" + std::to_string(i)).c_str(), &m_objects[i].state.blend);
+				ImGui::Checkbox(("Cull Face##" + std::to_string(i)).c_str(), &m_objects[i].state.cullFace);
 			}
 		}
 		ImGui::Unindent();
@@ -260,6 +268,20 @@ void defaultScene::onImGui()
 
 	ImGui::Separator();
 
+	ImGui::End();
+
+	ImGui::Begin("Available Objects");
+	std::vector<std::string> meshNames = _RM->meshes().getMeshNames();
+	for (int i = 0; i < meshNames.size(); i++)
+	{
+		ImGui::Text(meshNames[i].c_str());
+		if (ImGui::Button(("Create: " + meshNames[i]).c_str())) {
+			renderObject newObject;
+			newObject.meshID = _RM->meshes().meshIDfromName(meshNames[i]);
+			newObject.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
+			m_objects.push_back(newObject);
+		}
+	}
 	ImGui::End();
 }
 

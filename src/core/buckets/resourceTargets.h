@@ -23,7 +23,10 @@ inline constexpr ShaderTarget SHADER_TARGETS[] = {
 
 inline constexpr MeshTarget MESH_TARGETS[] = {
 	{ "cube", "resources/models/cube.obj"},
-	{ "bunny_lo", "resources/models/bunny_lo.obj"},
+	{ "gem", "resources/models/gem.obj"},
+	{ "sphere", "resources/models/sphere.obj"},
+	{ "stanfordBunny", "resources/models/stanford-bunny.obj"},
+	{ "stanfordBunnyHighRes", "resources/models/stanford-bunny-highres.obj"},
 	{ "monkey", "resources/models/monkey.obj"}
 };
 

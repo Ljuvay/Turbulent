@@ -53,7 +53,7 @@ void forwardRenderer::flush()
 		
 		shader->use();
 		shader->setVec3("viewPos", viewPos);
-		shader->setMat4("model", obj.worldTransform);
+		shader->setMat4("model", obj.worldTransform.getWorldTransform());
 		shader->setMat4("view", view);
 		shader->setMat4("projection", projection);
 
