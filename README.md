@@ -11,13 +11,14 @@ A custom game engine built from scratch in C++ and OpenGL to explore real-time r
 - Added ImGui integration for runtime debugging and scene controls
 - Improved renderer abstraction and render queue organization
 
-<img width="1850" height="952" alt="image" src="https://github.com/user-attachments/assets/73a38f8e-5318-4930-a939-4055e74ac62a" />
+<img width="1908" height="1127" alt="image" src="https://github.com/user-attachments/assets/1d26bf73-643d-4edd-b1e2-63fbcad4fd47" />
 
 ## Features
 - Forward Rendering Pipeline
 - Scene Management System
 - Resource Management System
 - Render Queue Architecture
+- Object instantiation
 - CPU/GPU Mesh Separation
 - ImGui Debug Tools
 - Blinn-Phong Lighting (up to 8 dynamic lights)
