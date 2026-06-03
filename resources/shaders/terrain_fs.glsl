@@ -14,7 +14,12 @@ uniform int numLights;
 
 uniform vec3 ambient;
 uniform vec3 specular;
+uniform vec3 diffuse;
 uniform float shininess;
+
+uniform sampler2D textures[4];
+uniform bool hasTexture;
+uniform vec2 tiling;
 
 uniform vec3 viewPos;
 
@@ -23,6 +28,7 @@ out vec4 FragColor;
 in vec3 vPos;
 in vec3 vNorm;
 in vec3 FragPos;
+in vec2 TexCoord;
 
 void main()
 {
@@ -31,10 +37,12 @@ void main()
 	float hVal = (vPos.y + 13) / 220.0; // Min - Max of terrain height
 	vec3 vColor;
 
+	/*
 	if(hVal < 0.15){vColor = vec3(0.75, 0.7, 0.5);} //Sand
 	else if(hVal <= 0.3){vColor = vec3(0.12, 0.25, 0.0);} //Grass
 	else if(hVal <= 0.85){vColor = vec3(0.5);} //Stone
 	else{vColor = vec3(1.0);}
+	*/
 
 	vec3 result = ambient;
 
@@ -48,7 +56,6 @@ void main()
 	{
 	   float dist = length(lights[i].position - FragPos);
        float attenuation = 1.0 / (1.0 + lightFade * dist + lightFadeAcc * dist * dist);
-
 
 		vec3 lightDir = normalize(lights[i].position - FragPos);
 
@@ -65,8 +72,16 @@ void main()
 		result += (diffAccum + specAccum);
 	}
 
-	
-	FragColor = vec4(result * vColor, 1.0);
+	vec3 sand = texture(textures[0], TexCoord * tiling).rgb;
+	vec3 grass = texture(textures[1], TexCoord * tiling).rgb;
+	vec3 rock = texture(textures[2], TexCoord * tiling).rgb;
+	vec3 snow = texture(textures[3], TexCoord * tiling).rgb;
+	vec3 albedo = sand;
+	albedo = mix(albedo, grass, smoothstep(0.1, 0.3, hVal));
+	albedo = mix(albedo, rock, smoothstep(0.5, 0.7, hVal));
+	albedo = mix(albedo, snow, smoothstep(0.8, 1.0, hVal));
+	FragColor = vec4(result * albedo, 1.0);
+	//FragColor = vec4(TexCoord, 0.0, 1.0);
 	//FragColor = vec4(normalize(vNorm) * 0.5 + 0.5, 1.0); //Debug normal colors
 }
 

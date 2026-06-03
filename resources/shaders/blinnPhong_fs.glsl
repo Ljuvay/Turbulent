@@ -18,12 +18,16 @@ uniform vec3 specular;
 uniform float shininess;
 
 uniform vec3 viewPos;
+uniform sampler2D textures[4];
+uniform bool hasTexture;
+uniform vec2 tiling;
 
 out vec4 FragColor;
 
 in vec3 vPos;
 in vec3 vNorm;
 in vec3 FragPos;
+in vec2 TexCoord;
 
 void main()
 {
@@ -54,6 +58,7 @@ void main()
 
        result += (diffAccum + specAccum);
     }
-
-    FragColor = vec4(result * diffuse, 1.0);
+    
+    vec3 albedo = hasTexture ? texture(textures[0], TexCoord * tiling).rgb : diffuse;
+    FragColor = vec4(result * albedo, 1.0);
 }

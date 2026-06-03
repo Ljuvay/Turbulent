@@ -62,6 +62,19 @@ void forwardRenderer::flush()
 		shader->setVec3("specular", obj.material.specular);
 		shader->setFloat("shininess", obj.material.shininess);
 
+		shader->setBool("hasTexture", obj.hasTexture);
+		if (obj.hasTexture)
+		{
+			for (int t = 0; t < obj.textureCount; t++) {
+				glActiveTexture(GL_TEXTURE0 + t);
+				GLuint glTex = resources->textures().getGLTextureID(obj.textureIDs[t]);
+				glBindTexture(GL_TEXTURE_2D, glTex);
+				shader->setInt("textures[" + std::to_string(t) + "]", t);
+				obj.useScaleTiling ? shader->setVec2("tiling", glm::vec2(obj.worldTransform.scale.x * obj.tiling.x, obj.worldTransform.scale.z * obj.tiling.y)) :
+					shader->setVec2("tiling", obj.tiling);
+			}
+		}
+
 		shader->setInt("numLights", sceneLights.size());
 		for (int i = 0; i < sceneLights.size(); i++)
 		{

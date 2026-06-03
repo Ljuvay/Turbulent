@@ -28,6 +28,7 @@ public:
 	void setFloat(const std::string& name, float value) const;
 
 	void setVec3(const std::string& name, const glm::vec3& vec);
+	void setVec2(const std::string& name, const glm::vec2& vec);
 
 	void setMat2(const std::string& name, const glm::mat2& mat);
 	void setMat3(const std::string& name, const glm::mat3& mat);

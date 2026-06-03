@@ -57,11 +57,17 @@ struct Transform
 
 struct renderObject
 {
+	std::string name = "";
 	uint32_t meshID = 0;
 	uint32_t shaderID = 0;
+	uint32_t textureIDs[4] = {0, 0, 0, 0};
+	glm::vec2 tiling = glm::vec2(0.1f);
 	Material material;
 	Transform worldTransform;
 	GLState state;
+	bool useScaleTiling = false;
+	bool hasTexture = false;
+	int textureCount = 0;
 };
 
 #endif // !RENDEROBJECT_H

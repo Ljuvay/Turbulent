@@ -69,7 +69,7 @@ Chunk::Chunk(glm::ivec2 coord, int size, int32_t seed, int resolution, const ter
 			Vertex tVert{
 				{worldX, height, worldZ}, // Position
 				{0.0f, 0.0f, 0.0f},	// Normal
-				{0.0f, 0.0f}		// UV
+				{i / (float)resolution, j / (float)resolution}		// UV
 			};
 			terrainVertices.push_back(tVert);
 		}

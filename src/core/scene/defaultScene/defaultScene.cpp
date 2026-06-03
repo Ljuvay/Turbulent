@@ -14,12 +14,11 @@ void defaultScene::init()
 {
 	_Camera->Position = df_sSettings.defaultCamPos;
 
-	glGenVertexArrays(1, &_gridVAO);
+	m_debugRenderer = std::make_unique<debugRenderer>();
+	m_debugRenderer->init(_RM.get());
 
 	_RM->loadResources();
 	_NRenderer->setResources(_RM.get());
-
-	//_MRenderer->updateGPU(_RM->getMeshData("cube").vertices, _RM->getMeshData("cube").indices);
 
 	terrSettings tSet;
 	df_terrain = std::make_unique<terrain>(tSet);
@@ -53,6 +52,7 @@ void defaultScene::init()
 	m_lights.push_back(l3);
 
 	renderObject cubeObject;
+	cubeObject.name = "cube";
 	cubeObject.meshID = _RM->meshes().meshIDfromName("cube");
 	cubeObject.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
 	cubeObject.worldTransform.translation = glm::vec3(0.0f, 150.0f, 0.0f);
@@ -62,8 +62,12 @@ void defaultScene::init()
 	cubeObject.material.diffuse = glm::vec3(0.8f);
 	cubeObject.material.specular = glm::vec3(0.5f);
 	cubeObject.material.shininess = 32.0f;
+	cubeObject.hasTexture = true;
+	cubeObject.textureIDs[0] = _RM->textures().textureIDfromName("wood");
+	cubeObject.textureCount = 1;
 
 	renderObject monkeyObject;
+	monkeyObject.name = "monkey";
 	monkeyObject.meshID = _RM->meshes().meshIDfromName("monkey");
 	monkeyObject.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
 	monkeyObject.worldTransform.translation = glm::vec3(0.0f, 400.0f, 0.0f);
@@ -74,7 +78,24 @@ void defaultScene::init()
 	monkeyObject.material.specular = glm::vec3(0.5f);
 	monkeyObject.material.shininess = 32.0f;
 
+	renderObject catStatue;
+	catStatue.name = "cat";
+	catStatue.meshID = _RM->meshes().meshIDfromName("cat");
+	catStatue.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
+	catStatue.worldTransform.translation = glm::vec3(0.0f, 400.0f, 0.0f);
+	catStatue.worldTransform.rotation = glm::vec3(0.0);
+	catStatue.worldTransform.scale = glm::vec3(50.0f);
+	catStatue.material.ambient = glm::vec3(0.2f);
+	catStatue.material.diffuse = glm::vec3(0.8f);
+	catStatue.material.specular = glm::vec3(0.5f);
+	catStatue.material.shininess = 32.0f;
+	catStatue.hasTexture = true;
+	catStatue.textureIDs[0] = _RM->textures().textureIDfromName("cat");
+	catStatue.tiling = glm::vec2(1.0f);
+	catStatue.textureCount = 1;
+
 	renderObject terrainObject;
+	terrainObject.name = "terrain";
 	terrainObject.state.wireframe = false;
 	terrainObject.meshID = terrainMeshID;
 	terrainObject.shaderID = _RM->shaders().shaderIDfromName("defaultTerrain");
@@ -82,7 +103,16 @@ void defaultScene::init()
 	terrainObject.material.diffuse = glm::vec3(0.8f);
 	terrainObject.material.specular = glm::vec3(0.5f);
 	terrainObject.material.shininess = 32.0f;
+	terrainObject.hasTexture = true;
+	terrainObject.textureIDs[0] = _RM->textures().textureIDfromName("sand");
+	terrainObject.textureIDs[1] = _RM->textures().textureIDfromName("grass");
+	terrainObject.textureIDs[2] = _RM->textures().textureIDfromName("rock");
+	terrainObject.textureIDs[3] = _RM->textures().textureIDfromName("snow");
+	terrainObject.tiling = glm::vec2(1.0f);
+	terrainObject.useScaleTiling = true;
+	terrainObject.textureCount = 4;
 
+	m_objects.push_back(catStatue);
 	m_objects.push_back(cubeObject);
 	m_objects.push_back(monkeyObject);
 	m_objects.push_back(terrainObject);
@@ -94,7 +124,6 @@ void defaultScene::update(float dt, const Window& window)
 	We need to get this to
 	player.update(dt);
 	*/
-	_rotation += 50.0f * dt;
 }
 
 void defaultScene::render(const Window& window)
@@ -124,34 +153,10 @@ void defaultScene::render(const Window& window)
 
 	for (renderObject& ro : m_objects)
 	{
-		if (ro.meshID == _RM->meshes().meshIDfromName("monkey"))
-		{
-			ro.worldTransform.getWorldTransform();
-		}
-		if (ro.meshID == _RM->meshes().meshIDfromName("cube"))
-		{
-			ro.worldTransform.getWorldTransform();
-		}
-
 		_NRenderer->submitItem(ro);
 	}
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_FALSE);
-
-	uint32_t gridID = _RM->shaders().shaderIDfromName("debugGrid");
-	Shader& gridShader = _RM->shaders().getShaderData(gridID);	gridShader.use();
-	gridShader.setMat4("view", _Camera->GetViewMatrix());
-	gridShader.setMat4("projection", projection);
-	gridShader.setVec3("camPos", _Camera->Position);
-
-	glBindVertexArray(_gridVAO);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-
-	glDepthMask(GL_TRUE);
-	glDisable(GL_BLEND);
+	m_debugRenderer->drawGrid(_Camera->GetViewMatrix(), projection, _Camera->Position);
 
 	_NRenderer->flush();
 
@@ -230,11 +235,12 @@ void defaultScene::onImGui()
 		ImGui::Unindent();
 	}
 
+	std::vector<std::string> meshNames = _RM->meshes().getMeshNames();
 	if (ImGui::CollapsingHeader("Objects"))
 	{
 		ImGui::Indent();
 		for (size_t i = 0; i < m_objects.size(); i++) {
-			if (ImGui::CollapsingHeader(("Object [" + std::to_string(i) + "]").c_str()))
+			if (ImGui::CollapsingHeader((m_objects[i].name + "##" + std::to_string(i)).c_str()))
 			{
 				ImGui::Text("Transform");
 				ImGui::DragFloat3(("Translation##" + std::to_string(i)).c_str(), glm::value_ptr(m_objects[i].worldTransform.translation), 1.0, -1000.0f, 1000.0f);
@@ -261,6 +267,10 @@ void defaultScene::onImGui()
 				ImGui::Checkbox(("Depth Mask##" + std::to_string(i)).c_str(), &m_objects[i].state.depthMask);
 				ImGui::Checkbox(("Blend##" + std::to_string(i)).c_str(), &m_objects[i].state.blend);
 				ImGui::Checkbox(("Cull Face##" + std::to_string(i)).c_str(), &m_objects[i].state.cullFace);
+				if (ImGui::Button(("Delete##" + std::to_string(i)).c_str())) {
+					m_objects.erase(m_objects.begin() + i); 
+					break;
+				}
 			}
 		}
 		ImGui::Unindent();
@@ -271,7 +281,6 @@ void defaultScene::onImGui()
 	ImGui::End();
 
 	ImGui::Begin("Available Objects");
-	std::vector<std::string> meshNames = _RM->meshes().getMeshNames();
 	for (int i = 0; i < meshNames.size(); i++)
 	{
 		ImGui::Text(meshNames[i].c_str());

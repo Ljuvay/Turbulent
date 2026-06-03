@@ -12,6 +12,7 @@
 #include "scene.h"
 #include "resourceManager.h"
 #include "forwardRenderer.h"
+#include "debugRenderer.h"
 #include "shader.h"
 #include "vertex.h"
 #include "terrain.h"
@@ -40,11 +41,11 @@ private:
 	std::vector<lightSource> m_lights;
 	std::vector<renderObject> m_objects;
 
+	std::unique_ptr<debugRenderer> m_debugRenderer;
 	std::unique_ptr<terrain> df_terrain;
 	sceneSettings df_sSettings;
 
 	bool m_editorMode = false;
-	unsigned int _gridVAO = 0;
 	float _rotation = 0.0f;
 
 	// Temp b4 refactor

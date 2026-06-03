@@ -13,6 +13,7 @@
 #include "shaderSystem.h"
 #include "meshSystem.h"
 #include "materialSystem.h"
+#include "textureSystem.h"
 
 class ResourceManager {
 public:
@@ -22,6 +23,7 @@ public:
 
 	meshSystem& meshes() { return *rm_meshSystem; }
 	shaderSystem& shaders() { return *rm_shaderSystem; }
+	textureSystem& textures() { return *rm_textureSystem; }
 
 	void createEmptyParticleGroup(const std::string& collectionName);
 	void addParticles(const std::vector<Vertex>& particles, const std::string& collectionName);
@@ -36,10 +38,12 @@ public:
 private:
 	std::unique_ptr<shaderSystem> rm_shaderSystem;
 	std::unique_ptr<meshSystem> rm_meshSystem;
+	std::unique_ptr<textureSystem> rm_textureSystem;
 
 	void loadMeshGroup();
 	void loadShaderGroup();
 	void loadParticleGroup();
+	void loadTextureGroup();
 
 	std::unordered_map<uint32_t, std::vector<Vertex>> particleContainer;
 	std::unordered_map<std::string, uint32_t> particleIdContainer;

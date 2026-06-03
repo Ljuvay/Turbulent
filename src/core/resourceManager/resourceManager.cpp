@@ -12,6 +12,7 @@ ResourceManager::ResourceManager()
 {
 	rm_meshSystem = std::make_unique<meshSystem>();
 	rm_shaderSystem = std::make_unique<shaderSystem>();
+	rm_textureSystem = std::make_unique<textureSystem>();
 }
 
 // Load Resources
@@ -21,6 +22,7 @@ void ResourceManager::loadResources()
 	loadMeshGroup();
 	loadParticleGroup();
 	loadShaderGroup();
+	loadTextureGroup();
 }
 
 // Particle
@@ -103,3 +105,9 @@ void ResourceManager::loadShaderGroup()
 	}
 	*/
 }
+
+void ResourceManager::loadTextureGroup()
+{
+	rm_textureSystem->loadTextures();
+}
+

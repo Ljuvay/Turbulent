@@ -29,6 +29,7 @@ file(GLOB IMGUI_SOURCES
 add_executable(app 
     ${APP_SOURCES}
     ${IMGUI_SOURCES}
+    external/stb_image/stb_image.cpp
 )
 
 # Gather include
@@ -46,6 +47,7 @@ target_include_directories(app PUBLIC
     external/glfw/include
     external/glm
     external/imgui
+    external/stb_image
 )
 
 set_target_properties(app PROPERTIES
