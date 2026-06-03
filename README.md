@@ -2,7 +2,7 @@
 A custom game engine built from scratch in C++ and OpenGL to explore real-time rendering, engine architecture, and graphics programming.
 
 ## Last Updated
-**May 2026**
+**June 2026**
 
 ### Recent Changes
 - Reworked Resource Manager into a modular system
@@ -10,8 +10,11 @@ A custom game engine built from scratch in C++ and OpenGL to explore real-time r
 - Implemented Blinn-Phong lighting (up to 8 dynamic lights)
 - Added ImGui integration for runtime debugging and scene controls
 - Improved renderer abstraction and render queue organization
+- Added Texture system with multi-texture support
+- Implemented height-based terrain texture blending (sand, grass, rock, snow)
+- Added debug renderer abstraction for debug grid
 
-<img width="1908" height="1127" alt="image" src="https://github.com/user-attachments/assets/1d26bf73-643d-4edd-b1e2-63fbcad4fd47" />
+<img width="1918" height="1123" alt="image" src="https://github.com/user-attachments/assets/7d1342a5-256a-45ba-a4a4-4eda66bce2a4" />
 
 ## Features
 - Forward Rendering Pipeline
@@ -24,6 +27,9 @@ A custom game engine built from scratch in C++ and OpenGL to explore real-time r
 - Blinn-Phong Lighting (up to 8 dynamic lights)
 - Chunk-Based Terrain Generation
 - Input Abstraction
+- Texture System (multi-texture, height-based blending)
+- Height-Based Terrain Texture Blending
+- Debug Renderer
 
 ## About Turbulent
 Turbulent is planned to be an ode to some of my favorite games I played
@@ -62,8 +68,10 @@ such as those in the "Graphics Programming" Discord.
 - [x] Debug Grid
 - [x] Basic Heightmap Terrain
 - [x] Basic Blinn-Phong Lighting
+- [x] Texture System
+- [x] Height-Based Terrain Texturing
 - [ ] Material System
-- [ ] Shadow Mapping
+- [-] Shadow Mapping
 - [ ] Frustum Culling
 - [ ] Terrain LOD
 - [ ] Deferred Rendering
