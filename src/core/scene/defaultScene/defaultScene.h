@@ -50,6 +50,7 @@ private:
 
 	// Temp b4 refactor
 	uint32_t terrainMeshID = 0;
+	uint32_t billBoardID = 0;
 };
 
 #endif // !DEFAULTSCENE_H

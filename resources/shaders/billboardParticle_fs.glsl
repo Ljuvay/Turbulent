@@ -2,12 +2,16 @@
 
 out vec4 FragColor;
 
-in vec3 vColor;
+uniform vec3 Pposition;
+uniform vec3 color;
+
 in vec2 vUV;
-in float vRadius;
 
 void main()
 {
+    float vRadius = 1.0f;
+    vec3 vColor = color;
+
     float borderPercentage = 0.1; // 0.0-1.0
 
     float dist = length(vUV);

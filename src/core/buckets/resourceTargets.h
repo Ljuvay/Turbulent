@@ -23,7 +23,8 @@ inline constexpr ShaderTarget SHADER_TARGETS[] = {
 	{ "debugGrid", "resources/shaders/debugGridTest_vs.glsl", "resources/shaders/debugGridTest_fs.glsl" },
 	{ "defaultMesh", "resources/shaders/defaultMesh_vs.glsl", "resources/shaders/defaultMesh_fs.glsl" },
 	{ "defaultTerrain", "resources/shaders/terrain_vs.glsl", "resources/shaders/terrain_fs.glsl"},
-	{ "blinnPhong", "resources/shaders/blinnPhong_vs.glsl", "resources/shaders/blinnPhong_fs.glsl"}
+	{ "blinnPhong", "resources/shaders/blinnPhong_vs.glsl", "resources/shaders/blinnPhong_fs.glsl"},
+	{ "billboardParticle", "resources/shaders/billboardParticle_vs.glsl", "resources/shaders/billboardParticle_fs.glsl"}
 };
 
 inline constexpr MeshTarget MESH_TARGETS[] = {
@@ -33,7 +34,8 @@ inline constexpr MeshTarget MESH_TARGETS[] = {
 	{ "stanfordBunny", "resources/models/stanford-bunny.obj"},
 	{ "stanfordBunnyHighRes", "resources/models/stanford-bunny-highres.obj"},
 	{ "monkey", "resources/models/monkey.obj"},
-	{ "cat", "resources/models/concrete_cat_statue_4k.obj"}
+	{ "cat", "resources/models/concrete_cat_statue_4k.obj"},
+	{ "billboard", "resources/models/billboard.obj"}
 };
 
 inline constexpr TextureTarget TEXTURE_TARGETS[] = {

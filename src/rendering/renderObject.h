@@ -24,6 +24,7 @@ struct lightSource
 	glm::vec3 position = glm::vec3(0.0f);
 	glm::vec3 color = glm::vec3(0.0f);
 	float strength = 0.1f;
+	bool draw = false;
 };
 
 struct Material

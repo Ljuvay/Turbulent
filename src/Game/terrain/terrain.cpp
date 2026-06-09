@@ -7,7 +7,7 @@
 #include "terrain.h"
 #include "chunk.h"
 
-constexpr int CHUNK_DEFAULT_RESOLUTION = 10;
+constexpr int CHUNK_DEFAULT_RESOLUTION = 30;
 
 terrain::terrain(const terrSettings& settings)
 {

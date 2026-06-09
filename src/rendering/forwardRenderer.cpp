@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
 
@@ -8,7 +9,7 @@
 void forwardRenderer::init()
 {
 	renderQueue.reserve(1000); // Just do max 1000 for now
-	sceneLights.reserve(16);
+	sceneLights.reserve(8);
 }
 
 void forwardRenderer::setResources(ResourceManager* rm)
@@ -20,6 +21,8 @@ void forwardRenderer::beginFrame()
 {
 	renderQueue.clear();
 	sceneLights.clear();
+
+	glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -70,7 +73,8 @@ void forwardRenderer::flush()
 				GLuint glTex = resources->textures().getGLTextureID(obj.textureIDs[t]);
 				glBindTexture(GL_TEXTURE_2D, glTex);
 				shader->setInt("textures[" + std::to_string(t) + "]", t);
-				obj.useScaleTiling ? shader->setVec2("tiling", glm::vec2(obj.worldTransform.scale.x * obj.tiling.x, obj.worldTransform.scale.z * obj.tiling.y)) :
+				obj.useScaleTiling ? 
+					shader->setVec2("tiling", glm::vec2(obj.worldTransform.scale.x * obj.tiling.x, obj.worldTransform.scale.z * obj.tiling.y)) :
 					shader->setVec2("tiling", obj.tiling);
 			}
 		}
@@ -94,6 +98,34 @@ void forwardRenderer::flush()
 			nullptr
 		);
 	}
+
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	for (int i = 0; i < sceneLights.size(); i++)
+	{
+		if (sceneLights[i].draw) {
+			uint32_t bbID = resources->meshes().meshIDfromName("billboard");
+			gpuMesh* mesh = &resources->meshes().getGPUMesh(bbID);
+			uint32_t sID = resources->shaders().shaderIDfromName("billboardParticle");
+			Shader* shader = &resources->shaders().getShaderData(sID);
+
+			shader->use();
+			shader->setVec3("viewPos", viewPos);
+			shader->setMat4("view", view);
+			shader->setMat4("projection", projection);
+			shader->setVec3("Pposition", sceneLights[i].position);
+			shader->setVec3("color", sceneLights[i].color);
+
+			glBindVertexArray(mesh->VAO);
+
+			glDrawElements(
+				GL_TRIANGLES,
+				mesh->indexCount,
+				GL_UNSIGNED_INT,
+				nullptr
+			);
+		}
+	}
 }
 
 void forwardRenderer::endFrame()
@@ -101,13 +133,24 @@ void forwardRenderer::endFrame()
 	// Leave empty for now
 }
 
-void forwardRenderer::setViewPos(const glm::vec3 viewPos)
+void forwardRenderer::setViewPos(const glm::vec3& viewPos)
 {
 	this->viewPos = viewPos;
 }
 
-void forwardRenderer::setViewProj(const glm::mat4& view, const glm::mat4 projection)
+void forwardRenderer::setViewProj(const glm::mat4& view, const glm::mat4& projection)
 {
 	this->view = view;
 	this->projection = projection;
+}
+
+void forwardRenderer::drawMesh()
+{
+
+}
+
+void forwardRenderer::drawPoint(const glm::vec3& position, const glm::vec3& color)
+{
+
+	
 }

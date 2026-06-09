@@ -82,9 +82,9 @@ void defaultScene::init()
 	catStatue.name = "cat";
 	catStatue.meshID = _RM->meshes().meshIDfromName("cat");
 	catStatue.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
-	catStatue.worldTransform.translation = glm::vec3(0.0f, 400.0f, 0.0f);
+	catStatue.worldTransform.translation = glm::vec3(-300.0f, 400.0f, 0.0f);
 	catStatue.worldTransform.rotation = glm::vec3(0.0);
-	catStatue.worldTransform.scale = glm::vec3(50.0f);
+	catStatue.worldTransform.scale = glm::vec3(250.0f);
 	catStatue.material.ambient = glm::vec3(0.2f);
 	catStatue.material.diffuse = glm::vec3(0.8f);
 	catStatue.material.specular = glm::vec3(0.5f);
@@ -219,6 +219,10 @@ void defaultScene::onImGui()
 		_Camera->Position.y,
 		_Camera->Position.z);
 
+	ImGui::Text("Background Color");
+	ImGui::ColorEdit3("BackGroundColor##", glm::value_ptr(_NRenderer->clearColor));
+
+
 	ImGui::Separator();
 
 	if (ImGui::CollapsingHeader("Lights"))
@@ -230,6 +234,12 @@ void defaultScene::onImGui()
 				ImGui::ColorEdit3(("Color##" + std::to_string(i)).c_str(), glm::value_ptr(m_lights[i].color));
 				ImGui::DragFloat(("Strength##" + std::to_string(i)).c_str(), &m_lights[i].strength, 1.0, 0.0, 128.0);
 				ImGui::DragFloat3(("Position##" + std::to_string(i)).c_str(), glm::value_ptr(m_lights[i].position), 1.0, -1000.0f, 1000.0f);
+				ImGui::Checkbox(("Draw Light##" + std::to_string(i)).c_str(), &m_lights[i].draw);
+				if (ImGui::Button(("Delete##" + std::to_string(i)).c_str())) {
+					m_lights.erase(m_lights.begin() + i);
+					break;
+				}
+
 			}
 		}
 		ImGui::Unindent();
@@ -281,6 +291,13 @@ void defaultScene::onImGui()
 	ImGui::End();
 
 	ImGui::Begin("Available Objects");
+	ImGui::Text("Light");
+	if (ImGui::Button("Create Light")) {
+		lightSource newLight;
+
+		m_lights.push_back(newLight);
+	}
+
 	for (int i = 0; i < meshNames.size(); i++)
 	{
 		ImGui::Text(meshNames[i].c_str());
@@ -288,6 +305,7 @@ void defaultScene::onImGui()
 			renderObject newObject;
 			newObject.meshID = _RM->meshes().meshIDfromName(meshNames[i]);
 			newObject.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
+			newObject.name = meshNames[i];
 			m_objects.push_back(newObject);
 		}
 	}

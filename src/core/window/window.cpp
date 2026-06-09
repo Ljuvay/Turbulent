@@ -76,7 +76,6 @@ float Window::getHeight() const
 
 void Window::beginFrame()
 {
-	glClearColor(0.5f, 0.5f, 1.000f, 1.000f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
