@@ -2,12 +2,13 @@
 #define WINDOW_H
 
 #include <GLFW/glfw3.h>
+#include <string>
 #include "camera.h"
 class Scene;
 
 class Window {
 public:
-	Window(int w, int h);
+	Window(int w, int h, std::string windowName);
 	~Window();
 
 	GLFWwindow* getWindow();

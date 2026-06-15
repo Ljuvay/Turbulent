@@ -29,19 +29,17 @@ public:
 	virtual void render(const Window& window) = 0;
 	virtual void inputHandler(Window& window, float dt) = 0;
 	virtual void onImGui() = 0;
-	Camera& getCamera() {
-		return *_Camera;
-	}
+	Camera& getCamera() { return *_Camera; }
+	void setRenderer(forwardRenderer& ForRend) { m_Renderer = &ForRend; }
+	void setResources(ResourceManager& resMan) { m_RM = &resMan; }
 
 	float fps = 0.0f;
 	float frameTime = 0.0f;
 
 protected:
-	std::unique_ptr<forwardRenderer> _NRenderer;
 	std::unique_ptr<Camera> _Camera;
-	std::shared_ptr<ResourceManager> _RM;
-
-	bool pressedLastFrame;
+	ResourceManager* m_RM;
+	forwardRenderer* m_Renderer;
 };
 
 #endif // !SCENE_H

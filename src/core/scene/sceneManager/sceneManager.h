@@ -9,6 +9,9 @@
 
 #include "scene.h"
 
+class forwardRenderer;
+class ResourceManager;
+
 class sceneManager
 {
 public:

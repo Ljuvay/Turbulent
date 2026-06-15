@@ -15,10 +15,7 @@ void defaultScene::init()
 	_Camera->Position = df_sSettings.defaultCamPos;
 
 	m_debugRenderer = std::make_unique<debugRenderer>();
-	m_debugRenderer->init(_RM.get());
-
-	_RM->loadResources();
-	_NRenderer->setResources(_RM.get());
+	m_debugRenderer->init(m_RM);
 
 	terrSettings tSet;
 	df_terrain = std::make_unique<terrain>(tSet);
@@ -29,8 +26,8 @@ void defaultScene::init()
 	terrainMesh.name = "terrain";
 	terrainMesh.vertices = verts;
 	terrainMesh.indices = indices;
-	_RM->meshes().addMesh(terrainMesh, "terrain");
-	terrainMeshID = _RM->meshes().uploadMesh("terrain");
+	m_RM->meshes().addMesh(terrainMesh, "terrain");
+	terrainMeshID = m_RM->meshes().uploadMesh("terrain");
 
 	lightSource l1;
 	l1.color = glm::vec3(1.0);
@@ -53,8 +50,8 @@ void defaultScene::init()
 
 	renderObject cubeObject;
 	cubeObject.name = "cube";
-	cubeObject.meshID = _RM->meshes().meshIDfromName("cube");
-	cubeObject.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
+	cubeObject.meshID = m_RM->meshes().meshIDfromName("cube");
+	cubeObject.shaderID = m_RM->shaders().shaderIDfromName("blinnPhong");
 	cubeObject.worldTransform.translation = glm::vec3(0.0f, 150.0f, 0.0f);
 	cubeObject.worldTransform.rotation = glm::vec3(0.0);
 	cubeObject.worldTransform.scale = glm::vec3(50.0f);
@@ -63,13 +60,13 @@ void defaultScene::init()
 	cubeObject.material.specular = glm::vec3(0.5f);
 	cubeObject.material.shininess = 32.0f;
 	cubeObject.hasTexture = true;
-	cubeObject.textureIDs[0] = _RM->textures().textureIDfromName("wood");
+	cubeObject.textureIDs[0] = m_RM->textures().textureIDfromName("wood");
 	cubeObject.textureCount = 1;
 
 	renderObject monkeyObject;
 	monkeyObject.name = "monkey";
-	monkeyObject.meshID = _RM->meshes().meshIDfromName("monkey");
-	monkeyObject.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
+	monkeyObject.meshID = m_RM->meshes().meshIDfromName("monkey");
+	monkeyObject.shaderID = m_RM->shaders().shaderIDfromName("blinnPhong");
 	monkeyObject.worldTransform.translation = glm::vec3(0.0f, 400.0f, 0.0f);
 	monkeyObject.worldTransform.rotation = glm::vec3(0.0);
 	monkeyObject.worldTransform.scale = glm::vec3(50.0f);
@@ -80,8 +77,8 @@ void defaultScene::init()
 
 	renderObject catStatue;
 	catStatue.name = "cat";
-	catStatue.meshID = _RM->meshes().meshIDfromName("cat");
-	catStatue.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
+	catStatue.meshID = m_RM->meshes().meshIDfromName("cat");
+	catStatue.shaderID = m_RM->shaders().shaderIDfromName("blinnPhong");
 	catStatue.worldTransform.translation = glm::vec3(-300.0f, 400.0f, 0.0f);
 	catStatue.worldTransform.rotation = glm::vec3(0.0);
 	catStatue.worldTransform.scale = glm::vec3(250.0f);
@@ -90,7 +87,7 @@ void defaultScene::init()
 	catStatue.material.specular = glm::vec3(0.5f);
 	catStatue.material.shininess = 32.0f;
 	catStatue.hasTexture = true;
-	catStatue.textureIDs[0] = _RM->textures().textureIDfromName("cat");
+	catStatue.textureIDs[0] = m_RM->textures().textureIDfromName("cat");
 	catStatue.tiling = glm::vec2(1.0f);
 	catStatue.textureCount = 1;
 
@@ -98,16 +95,16 @@ void defaultScene::init()
 	terrainObject.name = "terrain";
 	terrainObject.state.wireframe = false;
 	terrainObject.meshID = terrainMeshID;
-	terrainObject.shaderID = _RM->shaders().shaderIDfromName("defaultTerrain");
+	terrainObject.shaderID = m_RM->shaders().shaderIDfromName("defaultTerrain");
 	terrainObject.material.ambient = glm::vec3(0.5f);
 	terrainObject.material.diffuse = glm::vec3(0.8f);
 	terrainObject.material.specular = glm::vec3(0.5f);
 	terrainObject.material.shininess = 32.0f;
 	terrainObject.hasTexture = true;
-	terrainObject.textureIDs[0] = _RM->textures().textureIDfromName("sand");
-	terrainObject.textureIDs[1] = _RM->textures().textureIDfromName("grass");
-	terrainObject.textureIDs[2] = _RM->textures().textureIDfromName("rock");
-	terrainObject.textureIDs[3] = _RM->textures().textureIDfromName("snow");
+	terrainObject.textureIDs[0] = m_RM->textures().textureIDfromName("sand");
+	terrainObject.textureIDs[1] = m_RM->textures().textureIDfromName("grass");
+	terrainObject.textureIDs[2] = m_RM->textures().textureIDfromName("rock");
+	terrainObject.textureIDs[3] = m_RM->textures().textureIDfromName("snow");
 	terrainObject.tiling = glm::vec2(1.0f);
 	terrainObject.useScaleTiling = true;
 	terrainObject.textureCount = 4;
@@ -138,29 +135,29 @@ void defaultScene::render(const Window& window)
 	* 
 	* renderer.end();
 	*/
-	_NRenderer->beginFrame();
+	m_Renderer->beginFrame();
 
 	_Camera->setPerspective((float)window.getWidth() / (float)window.getHeight());
 	
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), _Camera->getPerspective(), 0.1f, 10000.0f);
-	_NRenderer->setViewProj(_Camera->GetViewMatrix(), projection);
-	_NRenderer->setViewPos(_Camera->Position);
+	m_Renderer->setViewProj(_Camera->GetViewMatrix(), projection);
+	m_Renderer->setViewPos(_Camera->Position);
 
 	for (lightSource& ls : m_lights)
 	{
-		_NRenderer->submitLight(ls);
+		m_Renderer->submitLight(ls);
 	}
 
 	for (renderObject& ro : m_objects)
 	{
-		_NRenderer->submitItem(ro);
+		m_Renderer->submitItem(ro);
 	}
 
-	m_debugRenderer->drawGrid(_Camera->GetViewMatrix(), projection, _Camera->Position);
+	//m_debugRenderer->drawGrid(_Camera->GetViewMatrix(), projection, _Camera->Position);
 
-	_NRenderer->flush();
+	m_Renderer->flush();
 
-	_NRenderer->endFrame();
+	m_Renderer->endFrame();
 }
 
 void defaultScene::inputHandler(Window& window, float dt)
@@ -220,7 +217,7 @@ void defaultScene::onImGui()
 		_Camera->Position.z);
 
 	ImGui::Text("Background Color");
-	ImGui::ColorEdit3("BackGroundColor##", glm::value_ptr(_NRenderer->clearColor));
+	ImGui::ColorEdit3("BackGroundColor##", glm::value_ptr(m_Renderer->clearColor));
 
 
 	ImGui::Separator();
@@ -245,7 +242,7 @@ void defaultScene::onImGui()
 		ImGui::Unindent();
 	}
 
-	std::vector<std::string> meshNames = _RM->meshes().getMeshNames();
+	std::vector<std::string> meshNames = m_RM->meshes().getMeshNames();
 	if (ImGui::CollapsingHeader("Objects"))
 	{
 		ImGui::Indent();
@@ -303,8 +300,8 @@ void defaultScene::onImGui()
 		ImGui::Text(meshNames[i].c_str());
 		if (ImGui::Button(("Create: " + meshNames[i]).c_str())) {
 			renderObject newObject;
-			newObject.meshID = _RM->meshes().meshIDfromName(meshNames[i]);
-			newObject.shaderID = _RM->shaders().shaderIDfromName("blinnPhong");
+			newObject.meshID = m_RM->meshes().meshIDfromName(meshNames[i]);
+			newObject.shaderID = m_RM->shaders().shaderIDfromName("blinnPhong");
 			newObject.name = meshNames[i];
 			m_objects.push_back(newObject);
 		}

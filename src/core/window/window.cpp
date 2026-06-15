@@ -6,7 +6,7 @@
 #include "window.h"
 #include "scene.h"
 
-Window::Window(int w, int h)
+Window::Window(int w, int h, std::string windowName)
 	: _SCR_WIDTH(w), _SCR_HEIGHT(h), _window(nullptr)
 {
 
@@ -22,7 +22,7 @@ Window::Window(int w, int h)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Create GLFW Window
-	_window = glfwCreateWindow(_SCR_WIDTH, _SCR_HEIGHT, "TEngine 2026", nullptr, nullptr);
+	_window = glfwCreateWindow(_SCR_WIDTH, _SCR_HEIGHT, windowName.c_str(), nullptr, nullptr);
 	if(!_window)
 	{
 		std::cerr << "FAILED TO CREATE GLFW WINDOW\n";
@@ -31,6 +31,7 @@ Window::Window(int w, int h)
 	}
 
 	glfwMakeContextCurrent(_window);
+	glfwSwapInterval(0);
 
 	// Initialize GLAD
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))

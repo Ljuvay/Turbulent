@@ -5,12 +5,14 @@
 #include "scene.h"
 #include "sceneManager.h"
 #include "defaultScene.h"
+#include "forwardRenderer.h"
+#include "resourceManager.h"
 
 void sceneManager::initDefaultScene()
 {
 	g_scenes["default"] = std::make_unique<defaultScene>();
 	activeScene = g_scenes["default"].get();
-	activeScene->init();
+	//activeScene->init();
 }
 
 void sceneManager::setScene(std::string sceneName)
