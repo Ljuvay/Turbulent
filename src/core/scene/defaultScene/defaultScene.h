@@ -23,7 +23,6 @@
 struct sceneSettings
 {
 	glm::vec3 defaultCamPos = { 0.0f, 5.0f, 0.0f };
-	bool meshFill = true;
 	bool paused = false;
 };
 

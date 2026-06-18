@@ -87,17 +87,6 @@ void defaultScene::inputHandler(Window& window, float dt)
 		if (Input::KeyDown(GLFW_KEY_ESCAPE)) glfwSetWindowShouldClose(glfwWindow, true);
 	}
 
-	if (Input::KeyPressed(GLFW_KEY_TAB)) {
-		if (df_sSettings.meshFill == true) {
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-			df_sSettings.meshFill = false;
-		}
-		else {
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			df_sSettings.meshFill = true;
-		}
-	}
-
 	if (Input::KeyPressed(GLFW_KEY_F1)) {
 		glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		m_editorMode = true;

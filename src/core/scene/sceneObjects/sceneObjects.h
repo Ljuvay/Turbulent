@@ -32,8 +32,8 @@ public:
 	void addModel();
 	void addLight();
 
-	void renderObjects();
-	void renderLights();
+	void submitObjects();
+	void submitLights();
 
 private:
 	std::vector<instancedModel> m_sceneLights;

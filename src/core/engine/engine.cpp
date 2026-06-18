@@ -5,7 +5,7 @@
 constexpr int DEFAULT_WINDOW_WIDTH = 800;
 constexpr int DEFAULT_WINDOW_HEIGHT = 600;
 
-constexpr float FIXED_DT = 0.016f;
+constexpr float FIXED_DT = 1.0f / 240.0f; // 1 / FPS CAP
 
 Engine::Engine() :
     m_EngineContext(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, "TEngine")
