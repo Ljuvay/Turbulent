@@ -3,6 +3,7 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 enum Camera_Movement {
 	FORWARD,
@@ -17,6 +18,9 @@ const float YAW = -90.0f;
 const float PITCH = 0.0f;
 const float SPEED = 50.0f;
 const float SENSITIVITY = 0.1f;
+const float FOV = 70.0f;
+const float MIN_VIEW = 0.1f;
+const float MAX_VIEW = 1000.0f;
 
 class Camera
 {
@@ -33,6 +37,9 @@ public:
 	float CameraSpeed = SPEED;
 	float MouseSens;
 	float Zoom;
+	float Fov = FOV;
+	float minView = MIN_VIEW;
+	float maxView = MAX_VIEW;
 
 	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f),
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
@@ -42,6 +49,8 @@ public:
 	void setPerspective(float perspective);
 
 	float getPerspective();
+
+	glm::mat4 getProjection();
 
 	glm::mat4 GetViewMatrix();
 

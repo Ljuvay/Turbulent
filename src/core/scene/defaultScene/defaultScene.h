@@ -18,6 +18,7 @@
 #include "terrain.h"
 #include "terrSettings.h"
 #include "input.h"
+#include "sceneObjects.h"
 
 struct sceneSettings
 {
@@ -38,8 +39,8 @@ public:
 
 	void onImGui();
 private:
-	std::vector<lightSource> m_lights;
-	std::vector<renderObject> m_objects;
+	std::vector<instancedLight> m_lights;
+	std::vector<instancedModel> m_objects;
 
 	std::unique_ptr<debugRenderer> m_debugRenderer;
 	std::unique_ptr<terrain> df_terrain;

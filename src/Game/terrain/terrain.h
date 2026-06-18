@@ -13,6 +13,7 @@
 class terrain
 {
 public:
+	terrain();
 	terrain(const terrSettings& settings);
 
 	void buildTerrain();

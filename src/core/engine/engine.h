@@ -2,6 +2,7 @@
 #define ENGINE_H
 
 #include <memory>
+#include <string>
 
 #include "forwardRenderer.h"
 #include "sceneManager.h"
@@ -13,6 +14,18 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
+struct EngineContext
+{
+	EngineContext(const int& windowWidth, const int& windowHeight, std::string windowName)
+		: m_window(windowWidth, windowHeight, windowName) 
+	{}
+
+	Window m_window;
+	std::unique_ptr<forwardRenderer> m_Renderer;
+	sceneManager m_sceneManager;
+	ResourceManager m_resourceManager;
+};
+
 class Engine
 {
 public:
@@ -21,10 +34,7 @@ public:
 	void run();
 	void shutdown();
 private:
-	Window m_window;
-	std::unique_ptr<forwardRenderer> m_Renderer;
-	sceneManager m_sceneManager;
-	ResourceManager m_resourceManager;
+	EngineContext m_EngineContext;
 };
 
 #endif // !ENGINE_H

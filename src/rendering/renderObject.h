@@ -9,6 +9,7 @@
 
 #include "mesh.h"
 #include "shader.h"
+#include "transform.h"
 
 struct GLState
 {
@@ -36,39 +37,21 @@ struct Material
 	bool useAmbient = true;
 };
 
-struct Transform
-{
-	glm::vec3 translation = glm::vec3(0.0f);
-	glm::vec3 rotation = glm::vec3(0.0f);
-	glm::vec3 scale = glm::vec3(1.0f);
-	glm::mat4 getWorldTransform() const
-	{
-		glm::mat4 worldTransform = glm::mat4(1.0f);
-
-		worldTransform = glm::translate(glm::mat4(1.0f), translation);
-
-		worldTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(rotation.x), glm::vec3(1,0,0));
-		worldTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y), glm::vec3(0,1,0));
-		worldTransform *= glm::rotate(glm::mat4(1.0f), glm::radians(rotation.z), glm::vec3(0,0,1));
-
-		worldTransform *= glm::scale(glm::mat4(1.0f), scale);
-		return worldTransform;
-	}
-};
-
 struct renderObject
 {
-	std::string name = "";
 	uint32_t meshID = 0;
 	uint32_t shaderID = 0;
 	uint32_t textureIDs[4] = {0, 0, 0, 0};
+
+	int textureCount = 0;
 	glm::vec2 tiling = glm::vec2(0.1f);
+
 	Material material;
 	Transform worldTransform;
 	GLState state;
+
 	bool useScaleTiling = false;
 	bool hasTexture = false;
-	int textureCount = 0;
 };
 
 #endif // !RENDEROBJECT_H

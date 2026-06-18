@@ -38,6 +38,11 @@ float Camera::getPerspective()
 	return camPerspective;
 }
 
+glm::mat4 Camera::getProjection()
+{
+	return glm::perspective(glm::radians(this->Fov), getPerspective(), this->minView, this->maxView);
+}
+
 // Process keyboard input
 void Camera::ProcessInputs(Camera_Movement direction, float deltaTime)
 {

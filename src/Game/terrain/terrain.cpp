@@ -9,6 +9,11 @@
 
 constexpr int CHUNK_DEFAULT_RESOLUTION = 30;
 
+terrain::terrain()
+{
+	generateSeed();
+}
+
 terrain::terrain(const terrSettings& settings)
 {
 	t_Settings = settings;
