@@ -29,14 +29,14 @@ struct instancedLight
 class sceneObjects
 {
 public:
-	void addModel();
-	void addLight();
+	void addModel(instancedModel& iModel);
+	void addLight(instancedLight& iLight);
 
-	void submitObjects();
-	void submitLights();
+	std::vector<instancedModel>& getObjects() { return m_sceneModels; }
+	std::vector<instancedLight>& getLights() { return m_sceneLights; }
 
 private:
-	std::vector<instancedModel> m_sceneLights;
+	std::vector<instancedLight> m_sceneLights;
 	std::vector<instancedModel> m_sceneModels;
 };
 

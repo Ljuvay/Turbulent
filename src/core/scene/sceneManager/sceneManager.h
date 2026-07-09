@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "scene.h"
+#include "sceneEditor.h"
 
 class forwardRenderer;
 class ResourceManager;
@@ -26,6 +27,7 @@ public:
 
 private:
 	std::unordered_map<std::string, std::unique_ptr<Scene>> g_scenes;
+	std::unique_ptr<sceneEditor> m_editor;
 	Scene* activeScene = nullptr;
 };
 
