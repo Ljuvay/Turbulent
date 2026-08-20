@@ -6,10 +6,16 @@
 
 #include "forwardRenderer.h"
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 void forwardRenderer::init()
 {
 	renderQueue.reserve(1000); // Just do max 1000 for now
 	sceneLights.reserve(8);
+
+	m_shadowFBO.create(1024, 1024, true);
 }
 
 void forwardRenderer::setResources(ResourceManager* rm)
@@ -25,7 +31,7 @@ void forwardRenderer::beginFrame()
 	glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 }
 
 void forwardRenderer::submitItem(const renderObject& renObj)
@@ -40,8 +46,22 @@ void forwardRenderer::submitLight(const lightSource& lightObj)
 
 
 // Need to eventually sort by GLState
-void forwardRenderer::flush()
+void forwardRenderer::flush(int scr_width, int scr_height)
 {
+	int shadowLightIdx = -1;
+	for (int i = 0; i < sceneLights.size(); i++)
+	{
+		if (sceneLights[i].castsShadows) { shadowLightIdx = i; break; }
+	}
+
+	if (shadowLightIdx >= 0) {
+		glm::mat4 lsm = sceneLights[shadowLightIdx].getLightSpaceMatrix(glm::vec3(0.0f), 200.0f);
+		this->lightSpaceMatrix = lsm;
+		renderShadowPass(lightSpaceMatrix);
+	}
+
+	glViewport(0, 0, scr_width, scr_height);
+
 	for (const auto& obj : renderQueue)
 	{
 		obj.state.depthTest ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
@@ -59,6 +79,12 @@ void forwardRenderer::flush()
 		shader->setMat4("model", obj.worldTransform.getWorldTransform());
 		shader->setMat4("view", view);
 		shader->setMat4("projection", projection);
+		shader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+
+		glActiveTexture(GL_TEXTURE0 + 7);
+		glBindTexture(GL_TEXTURE_2D, m_shadowFBO.getDepthTexture());
+		shader->setInt("shadowMap", 7);
+		shader->setInt("shadowLightIndex", shadowLightIdx);
 
 		shader->setVec3("ambient", obj.material.ambient);
 		shader->setVec3("diffuse", obj.material.diffuse);
@@ -84,6 +110,7 @@ void forwardRenderer::flush()
 		{
 			std::string base = "lights[" + std::to_string(i) + "].";
 			shader->setVec3(base + "position", sceneLights[i].position);
+			shader->setVec3(base + "direction", sceneLights[i].direction);
 			shader->setVec3(base + "color", sceneLights[i].color);
 			shader->setFloat(base + "strength", sceneLights[i].strength);
 		}
@@ -100,6 +127,7 @@ void forwardRenderer::flush()
 	}
 
 	glDisable(GL_CULL_FACE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_DEPTH_TEST);
 	for (int i = 0; i < sceneLights.size(); i++)
 	{
@@ -142,6 +170,45 @@ void forwardRenderer::setViewProj(const glm::mat4& view, const glm::mat4& projec
 {
 	this->view = view;
 	this->projection = projection;
+}
+
+void forwardRenderer::setLightSpaceMatrix(const glm::mat4& matrix)
+{
+	this->lightSpaceMatrix = matrix;
+}
+
+void forwardRenderer::renderShadowPass(const glm::mat4& lightSpaceMatrix)
+{
+	//Calc light matrix
+	m_shadowFBO.bind();
+	glViewport(0, 0, m_shadowFBO.getWidth(), m_shadowFBO.getHeight());
+	glDepthMask(GL_TRUE);
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	Shader* shader = &resources->shaders().getShaderData(resources->shaders().shaderIDfromName("depthShadow"));
+	shader->use();
+	shader->setMat4("lightSpaceMatrix", lightSpaceMatrix);
+
+	ImGui::Begin("Shadow Map Debug");
+	ImGui::Image(
+		(ImTextureID)(intptr_t)m_shadowFBO.getDepthTexture(),
+		ImVec2(256, 256),
+		ImVec2(0, 1),
+		ImVec2(1, 0)
+	);
+	ImGui::End();
+
+	for (renderObject& o : renderQueue)
+	{
+		gpuMesh* mesh = &resources->meshes().getGPUMesh(o.meshID);
+		shader->setMat4("model", o.worldTransform.getWorldTransform());
+		glBindVertexArray(mesh->VAO);
+		glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, nullptr);
+	}
+
+	m_shadowFBO.unbind();
+	//glViewport(0, 0, 800, 600); // 800 600 needs to be changed to the resized windows dimensions
 }
 
 void forwardRenderer::drawMesh()

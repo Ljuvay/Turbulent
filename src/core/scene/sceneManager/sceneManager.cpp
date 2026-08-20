@@ -26,6 +26,12 @@ void sceneManager::updateScene(float dt, const Window& window)
 	activeScene->update(dt, window);
 }
 
+void sceneManager::updateEditor(float dt, const Window& window, const Camera camera, bool editorMode)
+{
+	if (!editorMode || !activeScene) return;
+	activeScene->buildEditor(*m_editor);
+}
+
 void sceneManager::renderScene(const Window& window)
 {
 	activeScene->render(window);

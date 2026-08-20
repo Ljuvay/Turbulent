@@ -24,6 +24,7 @@ struct EngineContext
 	std::unique_ptr<forwardRenderer> m_Renderer;
 	sceneManager m_sceneManager;
 	ResourceManager m_resourceManager;
+	bool m_editorMode = false;
 };
 
 class Engine

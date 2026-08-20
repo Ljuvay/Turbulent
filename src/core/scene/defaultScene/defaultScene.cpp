@@ -68,7 +68,7 @@ void defaultScene::render(const Window& window)
 
 	m_debugRenderer->drawGrid(_Camera->GetViewMatrix(), _Camera->getProjection(), _Camera->Position);
 
-	m_Renderer->flush();
+	m_Renderer->flush(window.getWidth(), window.getHeight());
 
 	m_Renderer->endFrame();
 }
@@ -102,114 +102,11 @@ void defaultScene::inputHandler(Window& window, float dt)
 	window.editorMode = m_editorMode;
 }
 
-void defaultScene::onImGui()
+void defaultScene::onImGui() {}
+
+void defaultScene::buildEditor(sceneEditor& editor)
 {
-	ImGui::Begin("Engine stats");
-
-	ImGui::Text("FPS: %.1f", fps);
-	ImGui::Text("Frame Time: %.2f ms", frameTime);
-	ImGui::Text("Mode: %s", m_editorMode ? "Editor" : "Play");
-
-	ImGui::Separator();
-
-	ImGui::Text("Camera Position");
-	ImGui::Text("%.2f %.2f %.2f",
-		_Camera->Position.x,
-		_Camera->Position.y,
-		_Camera->Position.z);
-
-	ImGui::Text("Background Color");
-	ImGui::ColorEdit3("BackGroundColor##", glm::value_ptr(m_Renderer->clearColor));
-	ImGui::DragFloat(("Camera FOV##"), &_Camera->Fov, 1.0, 30.0, 90.0);
-	ImGui::DragFloat(("Camera View Distance##"), &_Camera->maxView, 250.0, 500.0, 100000.0);
-
-	ImGui::Separator();
-
-	if (ImGui::CollapsingHeader("Lights"))
-	{
-		ImGui::Indent();
-		for (size_t i = 0; i < m_lights.size(); i++) {
-			if (ImGui::CollapsingHeader(("Light [" + std::to_string(i) + "]").c_str()))
-			{
-				ImGui::ColorEdit3(("Color##" + std::to_string(i)).c_str(), glm::value_ptr(m_lights[i].lt.color));
-				ImGui::DragFloat(("Strength##" + std::to_string(i)).c_str(), &m_lights[i].lt.strength, 0.1, 0.0, 128.0);
-				ImGui::DragFloat3(("Position##" + std::to_string(i)).c_str(), glm::value_ptr(m_lights[i].lt.position), 1.0, -1000.0f, 1000.0f);
-				ImGui::Checkbox(("Draw Light##" + std::to_string(i)).c_str(), &m_lights[i].lt.draw);
-				if (ImGui::Button(("Delete##" + std::to_string(i)).c_str())) {
-					m_lights.erase(m_lights.begin() + i);
-					break;
-				}
-
-			}
-		}
-		ImGui::Unindent();
-	}
-
-	std::vector<std::string> meshNames = m_RM->meshes().getMeshNames();
-	if (ImGui::CollapsingHeader("Objects"))
-	{
-		ImGui::Indent();
-		for (size_t i = 0; i < m_objects.size(); i++) {
-			if (ImGui::CollapsingHeader((m_objects[i].name + "##" + std::to_string(i)).c_str()))
-			{
-				ImGui::Text("Transform");
-				ImGui::DragFloat3(("Translation##" + std::to_string(i)).c_str(), glm::value_ptr(m_objects[i].obj.worldTransform.translation), 1.0, -1000.0f, 1000.0f);
-				ImGui::DragFloat3(("Rotation##" + std::to_string(i)).c_str(), glm::value_ptr(m_objects[i].obj.worldTransform.rotation), 1.0, -1000.0f, 1000.0f);
-				ImGui::DragFloat3(("Scale##" + std::to_string(i)).c_str(), glm::value_ptr(m_objects[i].obj.worldTransform.scale), 1.0, 0.0f, 1000.0f);
-				float uniformScale = m_objects[i].obj.worldTransform.scale.x;
-				if (ImGui::DragFloat(("Uniform Scale##" + std::to_string(i)).c_str(), &uniformScale, 1.0, 0.0f, 1000.0f))
-				{
-					m_objects[i].obj.worldTransform.scale = glm::vec3(uniformScale);
-				}
-				ImGui::Separator();
-				ImGui::Text("Material");
-				ImGui::ColorEdit3(("Diffuse Color##" + std::to_string(i)).c_str(), glm::value_ptr(m_objects[i].obj.material.diffuse));
-				ImGui::ColorEdit3(("Specular Color##" + std::to_string(i)).c_str(), glm::value_ptr(m_objects[i].obj.material.specular));
-				ImGui::SliderFloat(("Shininess##" + std::to_string(i)).c_str(), &m_objects[i].obj.material.shininess, 0.0, 64.0);
-				ImGui::Checkbox(("Ambient##" + std::to_string(i)).c_str(), &m_objects[i].obj.material.useAmbient);
-				ImGui::BeginDisabled(!m_objects[i].obj.material.useAmbient);
-				ImGui::ColorEdit3(("Almbient Color##" + std::to_string(i)).c_str(), glm::value_ptr(m_objects[i].obj.material.ambient));
-				ImGui::EndDisabled();
-				ImGui::Separator();
-				ImGui::Text("GLState");
-				ImGui::Checkbox(("Wire Frame##" + std::to_string(i)).c_str(), &m_objects[i].obj.state.wireframe);
-				ImGui::Checkbox(("Depth Test##" + std::to_string(i)).c_str(), &m_objects[i].obj.state.depthTest);
-				ImGui::Checkbox(("Depth Mask##" + std::to_string(i)).c_str(), &m_objects[i].obj.state.depthMask);
-				ImGui::Checkbox(("Blend##" + std::to_string(i)).c_str(), &m_objects[i].obj.state.blend);
-				ImGui::Checkbox(("Cull Face##" + std::to_string(i)).c_str(), &m_objects[i].obj.state.cullFace);
-				if (ImGui::Button(("Delete##" + std::to_string(i)).c_str())) {
-					m_objects.erase(m_objects.begin() + i); 
-					break;
-				}
-			}
-		}
-		ImGui::Unindent();
-	}
-
-	ImGui::Separator();
-
-	ImGui::End();
-
-	ImGui::Begin("Available Objects");
-	ImGui::Text("Light");
-	if (ImGui::Button("Create Light")) {
-		instancedLight newLight;
-
-		m_lights.push_back(newLight);
-	}
-
-	for (int i = 0; i < meshNames.size(); i++)
-	{
-		ImGui::Text(meshNames[i].c_str());
-		if (ImGui::Button(("Create: " + meshNames[i]).c_str())) {
-			instancedModel newObject;
-			newObject.obj.meshID = m_RM->meshes().meshIDfromName(meshNames[i]);
-			newObject.obj.shaderID = m_RM->shaders().shaderIDfromName("blinnPhong");
-			newObject.name = meshNames[i];
-			m_objects.push_back(newObject);
-		}
-	}
-	ImGui::End();
+	editor.render(*_Camera, *m_Renderer, *m_RM, m_lights, m_objects, fps, frameTime, m_editorMode);
 }
 
 /* Im Gui mini cheat sheet 

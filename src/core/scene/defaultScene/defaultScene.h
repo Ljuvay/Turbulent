@@ -19,6 +19,7 @@
 #include "terrSettings.h"
 #include "input.h"
 #include "sceneObjects.h"
+#include "sceneEditor.h"
 
 struct sceneSettings
 {
@@ -35,8 +36,9 @@ public:
 	void update(float dt, const Window& window) override;
 	void render(const Window& window) override;
 	void inputHandler(Window& window, float dt) override;
-
-	void onImGui();
+	void onImGui() override;
+	void buildEditor(sceneEditor& editor) override;
+	
 private:
 	std::vector<instancedLight> m_lights;
 	std::vector<instancedModel> m_objects;
@@ -45,7 +47,6 @@ private:
 	std::unique_ptr<terrain> df_terrain;
 	sceneSettings df_sSettings;
 
-	bool m_editorMode = false;
 	float _rotation = 0.0f;
 
 	// Temp b4 refactor

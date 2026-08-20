@@ -24,7 +24,8 @@ inline constexpr ShaderTarget SHADER_TARGETS[] = {
 	{ "defaultMesh", "resources/shaders/defaultMesh_vs.glsl", "resources/shaders/defaultMesh_fs.glsl" },
 	{ "defaultTerrain", "resources/shaders/terrain_vs.glsl", "resources/shaders/terrain_fs.glsl"},
 	{ "blinnPhong", "resources/shaders/blinnPhong_vs.glsl", "resources/shaders/blinnPhong_fs.glsl"},
-	{ "billboardParticle", "resources/shaders/billboardParticle_vs.glsl", "resources/shaders/billboardParticle_fs.glsl"}
+	{ "billboardParticle", "resources/shaders/billboardParticle_vs.glsl", "resources/shaders/billboardParticle_fs.glsl"},
+	{ "depthShadow", "resources/shaders/depthShader_vs.glsl", "resources/shaders/depthShader_fs.glsl"}
 };
 
 inline constexpr MeshTarget MESH_TARGETS[] = {

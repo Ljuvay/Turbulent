@@ -23,9 +23,32 @@ struct GLState
 struct lightSource
 {
 	glm::vec3 position = glm::vec3(0.0f);
+	glm::vec3 direction = glm::vec3(0.0f);
 	glm::vec3 color = glm::vec3(0.0f);
 	float strength = 0.1f;
 	bool draw = false;
+	bool castsShadows = false;
+
+	glm::mat4 getLightSpaceMatrix(glm::vec3 sceneCenter, float sceneRadius) {
+		glm::vec3 lightDir = glm::normalize(direction);
+		float distance = sceneRadius * 2.0f;
+		glm::vec3 lightPos = sceneCenter - lightDir * distance;
+
+		glm::vec3 up = glm::abs(lightDir.y) > 0.99f
+			? glm::vec3(1.0f, 0.0f, 0.0f)
+			: glm::vec3(0.0f, 1.0f, 0.0f);
+		glm::mat4 lightView = glm::lookAt(lightPos, sceneCenter, up);
+
+		float near_plane = 0.1f;
+		float far_plane = distance + sceneRadius;
+		glm::mat4 lightProjection = glm::ortho(
+			-sceneRadius, sceneRadius,
+			-sceneRadius, sceneRadius,
+			near_plane, far_plane
+		);
+		
+		return lightProjection * lightView;
+	}
 };
 
 struct Material

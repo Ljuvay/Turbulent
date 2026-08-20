@@ -12,9 +12,7 @@
 Scene::Scene()
 	:
 	_Camera(std::make_unique<Camera>())
-{
-
-}
+{}
 
 Scene::~Scene(){}
 
@@ -25,3 +23,5 @@ void Scene::render(const Window& window) {}
 void Scene::inputHandler(Window& window, float dt) {}
 
 void Scene::onImGui() {}
+
+void Scene::buildEditor(sceneEditor& editor) {}

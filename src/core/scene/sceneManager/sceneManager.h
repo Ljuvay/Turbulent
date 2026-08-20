@@ -21,6 +21,7 @@ public:
 	void setScene(std::string sceneName);
 
 	void updateScene(float dt, const Window& window);
+	void updateEditor(float dt, const Window& window, const Camera camera, bool editorMode);
 	void renderScene(const Window& window);
 
 	Scene* getScene();

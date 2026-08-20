@@ -30,6 +30,7 @@ void Engine::init()
     m_EngineContext.m_Renderer = std::make_unique<forwardRenderer>();
     m_EngineContext.m_Renderer->init();
     m_EngineContext.m_Renderer->setResources(&m_EngineContext.m_resourceManager);
+    m_EngineContext.m_window.setRenderer(m_EngineContext.m_Renderer.get());
 
     m_EngineContext.m_sceneManager.initDefaultScene();
 
@@ -65,12 +66,14 @@ void Engine::run()
         //ImGui::ShowDemoWindow();
         m_EngineContext.m_sceneManager.getScene()->fps = 1.0f / frameTime;
         m_EngineContext.m_sceneManager.getScene()->frameTime = frameTime * 1000.0f;
-        m_EngineContext.m_sceneManager.getScene()->onImGui();
+        m_EngineContext.m_sceneManager.updateEditor(frameTime, m_EngineContext.m_window,
+            m_EngineContext.m_sceneManager.getScene()->getCamera(), m_EngineContext.m_sceneManager.getScene()->m_editorMode);
 
         while (frameAccumulator >= FIXED_DT) {
             m_EngineContext.m_sceneManager.getScene()->inputHandler(m_EngineContext.m_window, FIXED_DT);
-            Input::Update();
+            //m_EngineContext.m_sceneManager.g
             m_EngineContext.m_sceneManager.updateScene(FIXED_DT, m_EngineContext.m_window);
+            Input::Update();
             frameAccumulator -= FIXED_DT;
         }
 

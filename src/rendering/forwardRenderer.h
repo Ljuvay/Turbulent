@@ -10,6 +10,7 @@
 #include "renderObject.h"
 #include "mesh.h"
 #include "vertex.h"
+#include "frameBuffer.h"
 
 constexpr glm::vec3 DEFAULT_CLEAR_COLOR = glm::vec3(0.25, 0.25, 1.0);
 
@@ -22,18 +23,24 @@ public:
 	void beginFrame();
 	void submitItem(const renderObject& renObj);
 	void submitLight(const lightSource& lightObj);
-	void flush();
+	void flush(int scr_width, int scr_height);
 	void endFrame();
 
 	void setViewPos(const glm::vec3& viewPos);
 	void setViewProj(const glm::mat4& view, const glm::mat4& proj);
 	glm::vec3 clearColor = DEFAULT_CLEAR_COLOR;
+	void setLightSpaceMatrix(const glm::mat4& matrix);
+
+	void renderShadowPass(const glm::mat4& lightSpaceMatrix);
 
 	void drawMesh();
 	void drawPoint(const glm::vec3& position, const glm::vec3& color);
 
 private:
+
 	ResourceManager* resources = nullptr;
+
+	frameBuffer m_shadowFBO;
 
 	std::vector<renderObject> renderQueue;
 	std::vector<lightSource> sceneLights;
@@ -41,6 +48,7 @@ private:
 	glm::vec3 viewPos;
 	glm::mat4 view = glm::mat4(0.0f);
 	glm::mat4 projection = glm::mat4(0.0f);
+	glm::mat4 lightSpaceMatrix = glm::mat4(0.0f);
 
 };
 

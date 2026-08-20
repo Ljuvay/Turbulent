@@ -5,6 +5,7 @@
 #include <string>
 #include "camera.h"
 class Scene;
+class forwardRenderer;
 
 class Window {
 public:
@@ -18,6 +19,8 @@ public:
 
 	Scene* _scene = nullptr;
 	void setScene(Scene* scene) { _scene = scene; }
+	forwardRenderer* renderer = nullptr;
+	void setRenderer(forwardRenderer* r) { renderer = r; }
 
 	void beginFrame();
 	void endFrame();
